@@ -14,6 +14,7 @@ const selectClass =
 //   category     "area" | "length" | "weight" | "volume" | "temperature"
 //   defaultFrom  unit id, e.g. "marla"
 //   defaultTo    unit id, e.g. "sq-ft"
+//   defaultValue optional: starting value in the input (default "1")
 //   alsoShow     optional: extra unit ids shown in small text under the result
 //   tableFrom / tableTo  optional: show a ConversionTable for this pair.
 //                It follows the marla size picked here.
@@ -23,12 +24,13 @@ export default function Converter({
   category,
   defaultFrom,
   defaultTo,
+  defaultValue = "1",
   alsoShow = [],
   tableFrom,
   tableTo,
   children,
 }) {
-  const [value, setValue] = useState("1");
+  const [value, setValue] = useState(String(defaultValue));
   const [fromId, setFromId] = useState(defaultFrom);
   const [toId, setToId] = useState(defaultTo);
   const [marlaSize, setMarlaSize] = useState(MARLA_STANDARDS.revenue);

@@ -26,22 +26,25 @@ export default function PrivacyPolicyPage() {
         send them to our servers.
       </p>
 
-      <h2>Analytics and cookies</h2>
+      <h2>Analytics</h2>
       <p>
-        We use analytics tools to understand how people use the site, for example which pages are visited
-        and what kind of device is used. These tools may set cookies in your browser. The information is
-        used in aggregate to improve the site, not to identify you personally.
+        We use Vercel Web Analytics to understand how the site is used, for example which pages are
+        visited and what kind of device is used. It is privacy-friendly: it does not use cookies and does
+        not identify you personally. We only see the information in aggregate.
       </p>
+
+      <h2>Cookies</h2>
+      <p>This site does not currently use cookies.</p>
 
       <h2>Advertising</h2>
       <p>
-        We may show ads on this site in the future. If we do, our advertising partners may use cookies to
-        show ads and to measure how they perform. We will update this policy when ads are added.
+        We may show ads on this site in the future. Ads would use cookies, for example to show ads and to
+        measure how they perform. If we add ads, we will update this policy before they appear.
       </p>
 
       <h2>Your choices</h2>
       <p>
-        You can block or delete cookies in your browser settings. The converters will still work without
+        You can block or delete cookies in your browser settings at any time. The converters work without
         cookies.
       </p>
 

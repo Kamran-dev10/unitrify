@@ -3,10 +3,11 @@ import Converter from "@/components/Converter";
 import ConversionTable from "@/components/ConversionTable";
 import PlotCalculator from "@/components/PlotCalculator";
 import FeetInchesConverter from "@/components/FeetInchesConverter";
+import PlotSizeAnswer from "@/components/PlotSizeAnswer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import PageCards from "@/components/PageCards";
-import { PAGES, getPage, getPageBySlug, pageUrl } from "@/lib/pages";
+import { PAGES, POPULAR_SIZE_PAGES, getPage, getPageBySlug, pageUrl } from "@/lib/pages";
 import { getCategory } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
 
@@ -74,6 +75,13 @@ export default async function ConverterPage({ params }) {
   let tool;
   if (page.tool === "plot") {
     tool = <PlotCalculator>{content}</PlotCalculator>;
+  } else if (page.tool === "plot-size") {
+    tool = (
+      <>
+        <PlotSizeAnswer size={page.size} unitId={page.from} name={`${page.size} ${page.from}`} />
+        {content}
+      </>
+    );
   } else if (page.tool === "feet-inches") {
     tool = (
       <>
@@ -124,6 +132,13 @@ export default async function ConverterPage({ params }) {
               </li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {page.showPopularSizes && (
+        <section className="mt-12">
+          <h2 className="text-xl font-semibold tracking-tight">Popular plot sizes</h2>
+          <PageCards pages={POPULAR_SIZE_PAGES} columns={3} />
         </section>
       )}
 

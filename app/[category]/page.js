@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { CATEGORIES, getCategory } from "@/lib/categories";
-import { PAGES } from "@/lib/pages";
+import { PAGES, POPULAR_SIZE_PAGES } from "@/lib/pages";
 import { buildMetadata } from "@/lib/seo";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import PageCards from "@/components/PageCards";
@@ -35,8 +35,14 @@ export default async function CategoryPage({ params }) {
       <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{c.h1}</h1>
       <p className="mt-4 text-lg leading-relaxed text-muted">{c.intro}</p>
       <div className="mt-6">
-        <PageCards pages={PAGES.filter((p) => p.category === c.id)} size="lg" />
+        <PageCards pages={PAGES.filter((p) => p.category === c.id && p.tool !== "plot-size")} size="lg" />
       </div>
+      {c.id === "zameen" && (
+        <section className="mt-12">
+          <h2 className="text-xl font-semibold tracking-tight">Popular plot sizes</h2>
+          <PageCards pages={POPULAR_SIZE_PAGES} columns={3} />
+        </section>
+      )}
     </main>
   );
 }

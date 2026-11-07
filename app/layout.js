@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { SITE_NAME, SITE_URL } from "@/lib/config";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -23,6 +24,8 @@ export default function RootLayout({ children }) {
         <Header />
         <div className="flex-1">{children}</div>
         <Footer />
+        {/* Vercel Web Analytics: cookie-free; starts collecting once deployed on Vercel. */}
+        <Analytics />
       </body>
     </html>
   );
