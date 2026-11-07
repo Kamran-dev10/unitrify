@@ -8,6 +8,11 @@ import PageCards from "@/components/PageCards";
 // Whole page must be static; unknown categories return a real 404.
 export const ensureStatic = "navigation";
 
+// Same reason as app/[category]/[slug]/page.js: the whole page depends on
+// the category, so it waits for params instead of showing a fallback.
+// Category pages are still fully prerendered.
+export const instant = false;
+
 export function generateStaticParams() {
   return CATEGORIES.map((c) => ({ category: c.id }));
 }

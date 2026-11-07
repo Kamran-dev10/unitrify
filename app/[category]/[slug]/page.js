@@ -17,6 +17,13 @@ import { faqSchema, webApplicationSchema } from "@/lib/schema";
 // of streaming a fallback shell with status 200 first.
 export const ensureStatic = "navigation";
 
+// Everything on this page (h1, tool, content, JSON-LD) depends on the slug,
+// so there is no useful static shell to show behind a <Suspense> fallback,
+// and a fallback would also turn unknown URLs into soft 404s (status 200).
+// `instant = false` lets the route wait for params. It does not change
+// prerendering: every page in lib/pages.js is still fully built as HTML.
+export const instant = false;
+
 // Build every page in lib/pages.js at build time.
 export function generateStaticParams() {
   return PAGES.map((p) => ({ category: p.category, slug: p.slug }));
