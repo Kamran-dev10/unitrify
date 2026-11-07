@@ -1,12 +1,8 @@
-import { SITE_NAME } from "@/lib/config";
 import { buildMetadata } from "@/lib/seo";
+import { SITE_PAGES } from "@/lib/site-pages";
 import SimplePage from "@/components/SimplePage";
 
-export const metadata = buildMetadata({
-  title: "Contact",
-  description: `Contact ${SITE_NAME} with questions, corrections or ideas for new converters.`,
-  path: "/contact",
-});
+export const metadata = buildMetadata(SITE_PAGES.contact);
 
 // TODO: replace [MY EMAIL] below. You can make it a link like:
 // <a href="mailto:you@example.com" className="font-medium text-accent">you@example.com</a>

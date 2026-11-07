@@ -3,17 +3,13 @@ import { SITE_NAME } from "@/lib/config";
 import { PAGES, getPageBySlug } from "@/lib/pages";
 import { CATEGORIES } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
+import { SITE_PAGES } from "@/lib/site-pages";
 import SearchBox from "@/components/SearchBox";
 import PageCards from "@/components/PageCards";
 import JsonLd from "@/components/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 
-export const metadata = buildMetadata({
-  title: "Marla, Kanal & Unit Converter for Pakistan",
-  description:
-    "Convert marla, kanal, acre and murabba to square feet and more, with all three marla standards. Plus kg to lbs, cm to inches, °C to °F and other everyday units.",
-  path: "/",
-});
+export const metadata = buildMetadata(SITE_PAGES.home);
 
 // The 6 most useful land pages, shown first.
 const TOP_LAND = [

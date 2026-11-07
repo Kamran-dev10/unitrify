@@ -1,12 +1,9 @@
 import { SITE_NAME } from "@/lib/config";
 import { buildMetadata } from "@/lib/seo";
+import { SITE_PAGES } from "@/lib/site-pages";
 import SimplePage from "@/components/SimplePage";
 
-export const metadata = buildMetadata({
-  title: "Privacy Policy",
-  description: `How ${SITE_NAME} handles your data, cookies and analytics.`,
-  path: "/privacy-policy",
-});
+export const metadata = buildMetadata(SITE_PAGES.privacy);
 
 // DRAFT. Have this reviewed before launch, then remove the [REVIEW] line.
 export default function PrivacyPolicyPage() {

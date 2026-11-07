@@ -1,12 +1,9 @@
 import { SITE_NAME } from "@/lib/config";
 import { buildMetadata } from "@/lib/seo";
+import { SITE_PAGES } from "@/lib/site-pages";
 import SimplePage from "@/components/SimplePage";
 
-export const metadata = buildMetadata({
-  title: "About",
-  description: `What ${SITE_NAME} does: accurate unit conversions, with Pakistani land units like marla and kanal explained clearly.`,
-  path: "/about",
-});
+export const metadata = buildMetadata(SITE_PAGES.about);
 
 export default function AboutPage() {
   return (
