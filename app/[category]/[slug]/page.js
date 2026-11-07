@@ -10,6 +10,7 @@ import PageCards from "@/components/PageCards";
 import { PAGES, POPULAR_SIZE_PAGES, getPage, getPageBySlug, pageUrl } from "@/lib/pages";
 import { getCategory } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
+import { faqSchema, webApplicationSchema } from "@/lib/schema";
 
 // The whole page must be static (the build fails if something makes it
 // per-request). It also makes unknown URLs return a real 404 status instead
@@ -26,24 +27,14 @@ export async function generateMetadata({ params }) {
   const page = getPage(category, slug);
   if (!page) return {};
 
-  return buildMetadata({ title: page.title, description: page.metaDescription, path: pageUrl(page) });
+  return buildMetadata({
+    title: page.title,
+    description: page.metaDescription,
+    path: pageUrl(page),
+    imagePath: pageUrl(page), // this page's own opengraph-image.js
+  });
 }
 
-function FaqSchema({ faqs }) {
-  return (
-    <JsonLd
-      data={{
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: faqs.map((f) => ({
-          "@type": "Question",
-          name: f.question,
-          acceptedAnswer: { "@type": "Answer", text: f.answer },
-        })),
-      }}
-    />
-  );
-}
 
 function IntroAndFormula({ page }) {
   if (!page.intro && !page.formula) return null;
@@ -109,7 +100,8 @@ export default async function ConverterPage({ params }) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-16">
-      {faqs.length > 0 && <FaqSchema faqs={faqs} />}
+      <JsonLd data={webApplicationSchema({ name: page.title, path: pageUrl(page) })} />
+      {faqs.length > 0 && <JsonLd data={faqSchema(faqs)} />}
 
       <Breadcrumbs
         items={[

@@ -1,30 +1,19 @@
 import { ImageResponse } from "next/og";
-import { SITE_NAME } from "@/lib/config";
+import { iconElement } from "@/lib/og";
 
-// Favicon: first letter of SITE_NAME on the accent green. Built at build time.
-export const size = { width: 32, height: 32 };
-export const contentType = "image/png";
+// Favicon in three sizes, built at build time:
+// /icon/32 (browser tab), /icon/192 and /icon/512 (manifest, logo).
+export const ICON_SIZES = [32, 192, 512];
 
-export default function Icon() {
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#0F766E", // accent (same as --color-accent in globals.css)
-          color: "#FFFFFF",
-          fontSize: 22,
-          fontWeight: 700,
-          borderRadius: 7,
-        }}
-      >
-        {SITE_NAME.charAt(0).toUpperCase()}
-      </div>
-    ),
-    size
-  );
+export function generateImageMetadata() {
+  return ICON_SIZES.map((px) => ({
+    id: String(px),
+    contentType: "image/png",
+    size: { width: px, height: px },
+  }));
+}
+
+export default async function Icon({ id }) {
+  const px = Number(await id);
+  return new ImageResponse(iconElement(px), { width: px, height: px });
 }

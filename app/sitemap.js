@@ -1,6 +1,9 @@
-import { SITE_URL } from "@/lib/config";
 import { PAGES, pageUrl } from "@/lib/pages";
 import { CATEGORIES } from "@/lib/categories";
+import { absoluteUrl } from "@/lib/schema";
+
+// BUILD_DATE is set in next.config.mjs when the site is built.
+const lastModified = process.env.BUILD_DATE;
 
 export default function sitemap() {
   const paths = [
@@ -11,5 +14,5 @@ export default function sitemap() {
     "/contact",
     "/privacy-policy",
   ];
-  return paths.map((path) => ({ url: path === "/" ? SITE_URL : `${SITE_URL}${path}` }));
+  return paths.map((path) => ({ url: absoluteUrl(path), lastModified }));
 }

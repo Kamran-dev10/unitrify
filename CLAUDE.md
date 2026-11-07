@@ -35,7 +35,7 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 | `surface`      | `#FFFFFF` | Cards                        |
 | `line`         | `#E7E5E0` | 1px card / input borders     |
 | `ink`          | `#1F2937` | Main text (dark slate)       |
-| `muted`        | `#6B7280` | Secondary text               |
+| `muted`        | `#676D7B` | Secondary text               |
 | `accent`       | `#0F766E` | The one accent (deep green)  |
 | `accent-hover` | `#115E59` | Accent hover                 |
 | `accent-tint`  | `#E6F2EF` | Highlights                   |

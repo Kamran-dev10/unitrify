@@ -9,7 +9,12 @@ const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
+  preload: true,
 });
+
+export const viewport = {
+  themeColor: "#0F766E",
+};
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),

@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import { formatResult, plotArea } from "@/lib/convert";
 import { MARLA_STANDARDS } from "@/lib/units";
 import MarlaSizePicker from "@/components/MarlaSizePicker";
-import CopyButton from "@/components/CopyButton";
+import ResultBox from "@/components/ResultBox";
 
 const inputClass =
   "mt-2 h-16 w-full rounded-control border border-line bg-surface px-4 text-3xl font-semibold outline-none transition-colors focus:border-accent";
@@ -60,38 +60,28 @@ export default function PlotCalculator({ children }) {
 
         <MarlaSizePicker value={marlaSize} onChange={setMarlaSize} />
 
-        <div className="mt-6 rounded-control bg-accent-tint p-5" aria-live="polite">
-          <p className="text-sm text-muted">Plot size</p>
-          {showMessage ? (
-            <p className="mt-2 text-base text-ink">Please enter length and width as numbers, like 25 and 50.</p>
-          ) : (
-            <>
-              <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
-                <p className="min-w-0 break-words text-4xl font-bold tracking-tight text-accent sm:text-5xl">
-                  <span className="select-all">{area ? marlaText : "–"}</span>{" "}
-                  <span className="text-2xl font-semibold text-muted">marla</span>
-                </p>
-                <CopyButton text={marlaText} />
-              </div>
-              {area && (
-                <dl className="mt-4 grid grid-cols-3 gap-3 border-t border-line pt-4">
-                  <div>
-                    <dt className="text-sm text-muted">Square feet</dt>
-                    <dd className="mt-1 text-lg font-semibold">{formatResult(area.sqFt)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm text-muted">Kanal</dt>
-                    <dd className="mt-1 text-lg font-semibold">{formatResult(area.kanal)}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm text-muted">Square yards</dt>
-                    <dd className="mt-1 text-lg font-semibold">{formatResult(area.sqYd)}</dd>
-                  </div>
-                </dl>
-              )}
-            </>
-          )}
-        </div>
+        <ResultBox
+          label="Plot size"
+          value={marlaText}
+          unit="marla"
+          copyText={marlaText}
+          message={showMessage ? "Please enter length and width as numbers, like 25 and 50." : ""}
+          extra={
+            // Always shown (with dashes when empty) so the box keeps its height.
+            <dl className="mt-4 grid grid-cols-3 gap-3 border-t border-line pt-4">
+              {[
+                ["Square feet", area?.sqFt],
+                ["Kanal", area?.kanal],
+                ["Square yards", area?.sqYd],
+              ].map(([label, v]) => (
+                <div key={label}>
+                  <dt className="text-sm text-muted">{label}</dt>
+                  <dd className="mt-1 text-lg font-semibold">{area ? formatResult(v) : "–"}</dd>
+                </div>
+              ))}
+            </dl>
+          }
+        />
       </section>
       {children}
     </>

@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+  // Build date, used for lastModified in app/sitemap.js.
+  env: {
+    BUILD_DATE: new Date().toISOString(),
+  },
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

@@ -5,7 +5,7 @@ import { convert, formatResult, getUnits } from "@/lib/convert";
 import { MARLA_STANDARDS } from "@/lib/units";
 import ConversionTable from "@/components/ConversionTable";
 import MarlaSizePicker from "@/components/MarlaSizePicker";
-import CopyButton from "@/components/CopyButton";
+import ResultBox from "@/components/ResultBox";
 
 const selectClass =
   "select-chevron h-12 w-full appearance-none rounded-control border border-line bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
@@ -131,30 +131,27 @@ export default function Converter({
 
         {category === "area" && <MarlaSizePicker value={marlaSize} onChange={setMarlaSize} />}
 
-        <div className="mt-6 rounded-control bg-accent-tint p-5" aria-live="polite">
-          <p className="text-sm text-muted">Result</p>
-          {message ? (
-            <p id={`${id}-message`} className="mt-2 text-base text-ink">
-              {message}
-            </p>
-          ) : (
-            <>
-              <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
-                <p className="min-w-0 break-words text-4xl font-bold tracking-tight text-accent sm:text-5xl">
-                  <span className="select-all">{isEmpty ? "–" : resultText}</span>{" "}
-                  <span className="text-2xl font-semibold text-muted">{toUnit?.symbol}</span>
-                </p>
-                <CopyButton text={isEmpty ? "" : resultText} />
+        <ResultBox
+          value={isEmpty ? "" : resultText}
+          unit={toUnit?.symbol}
+          copyText={isEmpty ? "" : resultText}
+          message={message}
+          messageId={`${id}-message`}
+          extra={
+            alsoShow.length > 0 && (
+              // Always rendered (even when empty) so the box keeps its height.
+              <div className="mt-2 min-h-6 text-base text-muted" aria-live="polite">
+                {!message &&
+                  !isEmpty &&
+                  extras.map((e) => (
+                    <p key={e.unit.id}>
+                      = {e.text} {e.unit.name}
+                    </p>
+                  ))}
               </div>
-              {!isEmpty &&
-                extras.map((e) => (
-                  <p key={e.unit.id} className="mt-2 text-base text-muted">
-                    = {e.text} {e.unit.name}
-                  </p>
-                ))}
-            </>
-          )}
-        </div>
+            )
+          }
+        />
       </section>
 
       {children}

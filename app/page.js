@@ -5,6 +5,8 @@ import { CATEGORIES } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
 import SearchBox from "@/components/SearchBox";
 import PageCards from "@/components/PageCards";
+import JsonLd from "@/components/JsonLd";
+import { organizationSchema, websiteSchema } from "@/lib/schema";
 
 export const metadata = buildMetadata({
   title: "Marla, Kanal & Unit Converter for Pakistan",
@@ -29,6 +31,8 @@ export default function Home() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-12 sm:py-20">
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={websiteSchema()} />
       <section>
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Every measurement, one place.</h1>
         <p className="mt-4 text-lg text-muted">

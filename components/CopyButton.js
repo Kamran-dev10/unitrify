@@ -21,13 +21,20 @@ export default function CopyButton({ text }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={copy}
-      disabled={!text}
-      className="h-11 shrink-0 rounded-control border border-line bg-surface px-4 text-sm font-medium text-ink transition-colors hover:border-ink disabled:opacity-50"
-    >
-      {copied ? "Copied" : "Copy"}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={copy}
+        disabled={!text}
+        aria-label={copied ? "Result copied" : "Copy result"}
+        // Fixed width so "Copy" → "Copied" does not move anything.
+        className="h-11 w-24 shrink-0 rounded-control border border-line bg-surface text-sm font-medium text-ink transition-colors hover:border-ink disabled:opacity-50"
+      >
+        {copied ? "Copied" : "Copy"}
+      </button>
+      <span className="sr-only" aria-live="polite">
+        {copied ? "Result copied" : ""}
+      </span>
+    </>
   );
 }
