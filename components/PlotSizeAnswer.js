@@ -58,7 +58,7 @@ export default function PlotSizeAnswer({ size, unitId, name }) {
 
       <div className="mt-8">
         <h2 className="mb-4 text-xl font-semibold tracking-tight">Convert another size</h2>
-        <Converter category="area" defaultFrom={unitId} defaultTo="sq-ft" defaultValue={size} />
+        <Converter category="zameen"defaultFrom={unitId} defaultTo="sq-ft" defaultValue={size} />
       </div>
     </>
   );

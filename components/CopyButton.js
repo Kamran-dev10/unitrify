@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export default function CopyButton({ text }) {
+// label: what is copied, for screen readers ("Copy result", "Copy Kilogram").
+export default function CopyButton({ text, label = "result" }) {
   const [copied, setCopied] = useState(false);
   const timer = useRef(null);
 
@@ -26,14 +27,14 @@ export default function CopyButton({ text }) {
         type="button"
         onClick={copy}
         disabled={!text}
-        aria-label={copied ? "Result copied" : "Copy result"}
+        aria-label={copied ? `Copied ${label}` : `Copy ${label}`}
         // Fixed width so "Copy" → "Copied" does not move anything.
         className="h-11 w-24 shrink-0 rounded-control border border-line bg-surface text-sm font-medium text-ink transition-colors hover:border-ink disabled:opacity-50"
       >
         {copied ? "Copied" : "Copy"}
       </button>
       <span className="sr-only" aria-live="polite">
-        {copied ? "Result copied" : ""}
+        {copied ? `Copied ${label}` : ""}
       </span>
     </>
   );

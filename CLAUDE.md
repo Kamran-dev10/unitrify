@@ -12,9 +12,13 @@ volume).
 # Code rules
 
 - Next.js App Router, JavaScript only. Never use TypeScript.
-- All units and conversion factors live only in `lib/units.js`.
+- All units and conversion factors live only in `lib/categories/` (one file
+  per category, registered in `lib/categories/index.js`). `lib/units.js` is
+  only a thin wrapper for older imports.
+- Units have a `kind`: `"linear"` (base = value × factor), `"affine"`
+  (base = value × factor + offset) or `"inverse"` (base = factor ÷ value).
 - Never change a conversion factor without telling the user the old and new value.
-- Every unit has a country tag: `"pk"` or `"global"`.
+- Every unit has a country tag: `"global"` or a country code such as `"pk"`.
 - Every page must be statically generated (good for SEO).
 - Site name comes only from `SITE_NAME` in `lib/config.js`. Never hardcode it.
 - All website text is in English only. No Urdu or Roman Urdu text anywhere

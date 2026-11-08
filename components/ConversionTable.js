@@ -1,4 +1,4 @@
-import { convert, formatResult, getUnits } from "@/lib/convert";
+import { convert, formatResult, getUnits, hasMarlaStandard } from "@/lib/convert";
 import { MARLA_STANDARDS } from "@/lib/units";
 
 const ROWS = [
@@ -19,7 +19,8 @@ export default function ConversionTable({
   const to = units.find((u) => u.id === toId);
   if (!from || !to) return null;
 
-  const usesMarla = category === "area" && ["marla", "kanal"].some((id) => id === fromId || id === toId);
+  const usesMarla =
+    hasMarlaStandard(category) && ["marla", "kanal"].some((id) => id === fromId || id === toId);
 
   return (
     <section className="mt-12">

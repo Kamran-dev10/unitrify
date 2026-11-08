@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { convert, formatResult, getUnits } from "@/lib/convert";
+import { convert, formatSmart, getUnits, hasMarlaStandard, inputMessage } from "@/lib/convert";
 import { MARLA_STANDARDS } from "@/lib/units";
 import ConversionTable from "@/components/ConversionTable";
 import MarlaSizePicker from "@/components/MarlaSizePicker";
@@ -11,7 +11,7 @@ const selectClass =
   "select-chevron h-12 w-full appearance-none rounded-control border border-line bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
 
 // Props:
-//   category     "area" | "length" | "weight" | "volume" | "temperature"
+//   category     unit category id from lib/categories/, e.g. "zameen", "length"
 //   defaultFrom  unit id, e.g. "marla"
 //   defaultTo    unit id, e.g. "sq-ft"
 //   defaultValue optional: starting value in the input (default "1")
@@ -40,23 +40,18 @@ export default function Converter({
   const units = getUnits(category, options);
   const toUnit = units.find((u) => u.id === toId);
   const result = convert(value, fromId, toId, category, options);
-  const resultText = formatResult(result);
+  const resultText = formatSmart(result);
   const extras = alsoShow
     .filter((extraId) => extraId !== toId)
     .map((extraId) => ({
       unit: units.find((u) => u.id === extraId),
-      text: formatResult(convert(value, fromId, extraId, category, options)),
+      text: formatSmart(convert(value, fromId, extraId, category, options)),
     }))
     .filter((e) => e.unit && e.text);
 
   const isEmpty = value.trim() === "";
-  let message = "";
-  if (!isEmpty && result === null) {
-    message =
-      category !== "temperature" && Number(value) < 0
-        ? "Please enter a number that is 0 or more."
-        : "Please enter a number, like 5 or 2.5.";
-  }
+  const message =
+    !isEmpty && result === null ? inputMessage(value, category) || "This value cannot be converted." : "";
 
   function swap() {
     setFromId(toId);
@@ -129,7 +124,7 @@ export default function Converter({
           </div>
         </div>
 
-        {category === "area" && <MarlaSizePicker value={marlaSize} onChange={setMarlaSize} />}
+        {hasMarlaStandard(category) && <MarlaSizePicker value={marlaSize} onChange={setMarlaSize} />}
 
         <ResultBox
           value={isEmpty ? "" : resultText}
