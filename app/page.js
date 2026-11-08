@@ -49,6 +49,8 @@ const GROUP_LABELS = {
   common: "Everyday units",
   engineering: "Engineering",
   heat: "Heat and temperature",
+  electricity: "Electricity",
+  magnetism: "Magnetism",
 };
 
 const linkClass = "text-ink transition-colors hover:text-accent";
