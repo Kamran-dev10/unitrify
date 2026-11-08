@@ -1,8 +1,7 @@
 import Search from "@/components/Search";
-import { buildSearchIndex } from "@/lib/search";
 
-// Server wrapper: builds the small search index at build time and hands
-// it to the client-side Search box.
+// The search box. It loads its index (/search-index.json) only when the
+// user first focuses it, so the index is not in every page's JavaScript.
 export default function SearchBox(props) {
-  return <Search index={buildSearchIndex()} {...props} />;
+  return <Search {...props} />;
 }

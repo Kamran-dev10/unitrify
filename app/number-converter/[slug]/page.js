@@ -1,3 +1,4 @@
+import { groupCrumbFor } from "@/lib/groups";
 import { notFound } from "next/navigation";
 import { NUMBER_PAGES, getTool } from "@/lib/tools";
 import { buildMetadata } from "@/lib/seo";
@@ -49,9 +50,10 @@ export default async function NumberPairPage({ params }) {
     <ToolShell
       crumbs={[
         { name: "Home", path: "/" },
+        groupCrumbFor("number-converter"),
         { name: tool.name, path: "/number-converter" },
         { name: p.h1, path: url(p) },
-      ]}
+      ].filter(Boolean)}
       h1={p.h1}
       appName={p.title}
       quickAnswer={p.quickAnswer}

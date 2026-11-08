@@ -1,14 +1,28 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { searchPages } from "@/lib/search";
+import { searchPages } from "@/lib/search-match";
+
+// The index is a static file, fetched once per visit when a search box is
+// first focused (or typed in), and shared by every search box on the page.
+let indexPromise = null;
+function loadIndex() {
+  indexPromise ??= fetch("/search-index.json")
+    .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+    .catch((err) => {
+      indexPromise = null; // try again on the next focus
+      throw err;
+    });
+  return indexPromise;
+}
 
 // Search box with a live list of matching pages.
 // Keyboard: ↓ / ↑ to move, Enter to open, Esc to close.
-// Use components/SearchBox.js (it passes in the index) instead of this directly.
-export default function Search({ index, size = "md", placeholder = "Search converters" }) {
+export default function Search({ size = "md", placeholder = "Search converters" }) {
+  const [index, setIndex] = useState(null);
+  const [loadError, setLoadError] = useState(false);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
@@ -16,7 +30,23 @@ export default function Search({ index, size = "md", placeholder = "Search conve
   const id = useId();
   const listId = `${id}-list`;
 
-  const results = searchPages(index, query);
+  function ensureIndex() {
+    if (index) return;
+    loadIndex()
+      .then((data) => {
+        setIndex(data);
+        setLoadError(false);
+      })
+      .catch(() => setLoadError(true));
+  }
+
+  // Text typed before the index arrived (or restored by the browser) still searches.
+  useEffect(() => {
+    if (query.trim() !== "" && !index) ensureIndex();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
+
+  const results = index ? searchPages(index, query) : [];
   const showList = open && query.trim() !== "";
 
   function go(item) {
@@ -62,7 +92,10 @@ export default function Search({ index, size = "md", placeholder = "Search conve
           setOpen(true);
           setActive(-1);
         }}
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          setOpen(true);
+          ensureIndex();
+        }}
         onBlur={() => setOpen(false)}
         onKeyDown={onKeyDown}
         role="combobox"
@@ -79,7 +112,9 @@ export default function Search({ index, size = "md", placeholder = "Search conve
           role="listbox"
           className="absolute left-0 right-0 top-full z-20 mt-2 overflow-hidden rounded-card border border-line bg-surface py-1 shadow-card"
         >
-          {results.length === 0 ? (
+          {!index ? (
+            <li className="px-4 py-3 text-sm text-muted">{loadError ? "Search could not load. Please try again." : "Loading…"}</li>
+          ) : results.length === 0 ? (
             <li className="px-4 py-3 text-sm text-muted">No converters found. Try &quot;marla&quot; or &quot;kg&quot;.</li>
           ) : (
             results.map((item, i) => (

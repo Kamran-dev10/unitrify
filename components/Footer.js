@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { cacheLife } from "next/cache";
 import { SITE_NAME } from "@/lib/config";
-import { CATEGORIES } from "@/lib/categories";
-import { TOOLS } from "@/lib/tools";
+import { CONVERTER_GROUPS, ALL_CONVERTERS_PAGE } from "@/lib/groups";
 
 // The year is read once at build time and cached, so the footer stays static.
 async function getYear() {
@@ -11,7 +10,7 @@ async function getYear() {
   return new Date().getFullYear();
 }
 
-const linkClass = "text-sm text-muted transition-colors hover:text-ink";
+const linkClass = "inline-flex min-h-11 items-center text-sm text-muted transition-colors hover:text-ink";
 
 export default async function Footer() {
   const year = await getYear();
@@ -21,26 +20,24 @@ export default async function Footer() {
         <nav aria-label="Footer" className="grid gap-8 sm:grid-cols-2">
           <div>
             <h2 className="text-sm font-semibold">Converters</h2>
-            <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
-              {CATEGORIES.map((c) => (
-                <li key={c.id}>
-                  <Link href={`/${c.id}`} className={linkClass}>
-                    {c.name}
+            <ul className="mt-3 grid grid-cols-2 gap-x-4">
+              {CONVERTER_GROUPS.map((g) => (
+                <li key={g.id}>
+                  <Link href={g.path} className={linkClass}>
+                    {g.name}
                   </Link>
                 </li>
               ))}
-              {TOOLS.map((t) => (
-                <li key={t.id}>
-                  <Link href={`/${t.id}`} className={linkClass}>
-                    {t.name}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link href={ALL_CONVERTERS_PAGE.path} className={`${linkClass} font-medium`}>
+                  All converters
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
             <h2 className="text-sm font-semibold">{SITE_NAME}</h2>
-            <ul className="mt-3 space-y-2">
+            <ul className="mt-3">
               <li>
                 <Link href="/about" className={linkClass}>About</Link>
               </li>

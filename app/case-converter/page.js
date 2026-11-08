@@ -1,3 +1,4 @@
+import { groupCrumbFor } from "@/lib/groups";
 import { getTool } from "@/lib/tools";
 import { buildMetadata } from "@/lib/seo";
 import ToolShell from "@/components/ToolShell";
@@ -27,8 +28,9 @@ export default function CaseConverterPage() {
     <ToolShell
       crumbs={[
         { name: "Home", path: "/" },
+        groupCrumbFor("case-converter"),
         { name: tool.name, path: "/case-converter" },
-      ]}
+      ].filter(Boolean)}
       h1={tool.h1}
       appName={tool.title}
       tool={<CaseConverter />}

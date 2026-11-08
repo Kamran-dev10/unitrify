@@ -1,3 +1,4 @@
+import { groupCrumbFor } from "@/lib/groups";
 import { notFound } from "next/navigation";
 import { CURRENCY_PAGES, getTool } from "@/lib/tools";
 import { buildMetadata } from "@/lib/seo";
@@ -58,9 +59,10 @@ export default async function CurrencyPairPage({ params }) {
     <ToolShell
       crumbs={[
         { name: "Home", path: "/" },
+        groupCrumbFor("currency-converter"),
         { name: tool.name, path: "/currency-converter" },
         { name: p.h1, path: url(p) },
-      ]}
+      ].filter(Boolean)}
       h1={p.h1}
       appName={p.title}
       quickAnswer={one ? `1 ${p.from} = ${one} ${p.to}` : null}

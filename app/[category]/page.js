@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { CATEGORIES, getCategory } from "@/lib/categories";
 import { PAGES, POPULAR_SIZE_PAGES } from "@/lib/pages";
 import { buildMetadata } from "@/lib/seo";
+import { groupCrumbFor } from "@/lib/groups";
 import { faqSchema } from "@/lib/schema";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import PageCards from "@/components/PageCards";
@@ -52,8 +53,9 @@ export default async function CategoryPage({ params }) {
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
+          groupCrumbFor(c.id),
           { name: c.name, path: `/${c.id}` },
-        ]}
+        ].filter(Boolean)}
       />
       <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{c.h1}</h1>
       {c.note && <p className="mt-3 text-sm leading-relaxed text-muted">{c.note}</p>}

@@ -1,3 +1,4 @@
+import { groupCrumbFor } from "@/lib/groups";
 import { getTool, NUMBER_PAGES } from "@/lib/tools";
 import { buildMetadata } from "@/lib/seo";
 import ToolShell from "@/components/ToolShell";
@@ -16,8 +17,9 @@ export default function NumberConverterPage() {
     <ToolShell
       crumbs={[
         { name: "Home", path: "/" },
+        groupCrumbFor("number-converter"),
         { name: tool.name, path: "/number-converter" },
-      ]}
+      ].filter(Boolean)}
       h1={tool.h1}
       appName={tool.title}
       tool={<NumberBaseConverter defaultValue="255" defaultFrom={10} defaultTo={2} />}

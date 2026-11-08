@@ -1,28 +1,32 @@
 import Link from "next/link";
 import { SITE_NAME } from "@/lib/config";
-import { PAGES, getPageBySlug, pageUrl } from "@/lib/pages";
-import { CATEGORIES } from "@/lib/categories";
+import { getPageBySlug, pageUrl } from "@/lib/pages";
 import { buildMetadata } from "@/lib/seo";
 import { SITE_PAGES } from "@/lib/site-pages";
+import { CONVERTER_GROUPS, ALL_CONVERTERS_PAGE } from "@/lib/groups";
 import SearchBox from "@/components/SearchBox";
-import PageCards from "@/components/PageCards";
 import JsonLd from "@/components/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
-import { TOOLS } from "@/lib/tools";
 
 export const metadata = buildMetadata(SITE_PAGES.home);
 
-// The 6 most useful land pages, shown first.
-const TOP_LAND = [
-  "marla-to-sq-ft",
-  "plot-size-calculator",
-  "kanal-to-marla",
-  "sq-ft-to-marla",
-  "kanal-to-sq-ft",
-  "acre-to-kanal",
+// "Popular": 12 cards, each with a short hint of what it converts.
+const POPULAR = [
+  { href: "/length", name: "Length", hint: "cm, inches, feet, meters, miles" },
+  { href: "/weight", name: "Weight", hint: "kg, lbs, grams, ounces, tola" },
+  { href: "/temperature", name: "Temperature", hint: "°C, °F and kelvin" },
+  { href: "/currency-converter", name: "Currency", hint: "Daily exchange rates" },
+  { href: "/area", name: "Area", hint: "sq ft, sq m, acres, hectares" },
+  { href: "/volume", name: "Volume", hint: "liters, gallons, cups, ml" },
+  { href: "/speed", name: "Speed", hint: "km/h, mph, m/s, knots" },
+  { href: "/data-storage", name: "Data storage", hint: "MB, GB, TB, GiB" },
+  { href: "/case-converter", name: "Case converter", hint: "UPPER, lower, Title Case" },
+  { href: "/number-converter", name: "Number converter", hint: "Binary, hex, Roman numerals" },
+  { href: "/zameen", name: "Pakistani land", hint: "Marla, kanal, acre, murabba" },
+  { slug: "plot-size-calculator", name: "Plot size calculator", hint: "Length × width in marla" },
 ];
 
-// "Common Conversions": each pair next to its reverse.
+// "Common conversions": each pair next to its reverse.
 const COMMON_PAIRS = [
   ["cm-to-inch", "inch-to-cm"],
   ["mm-to-inches", "inches-to-mm"],
@@ -44,51 +48,42 @@ const COMMON_PAIRS = [
   ["hp-to-kw", "kw-to-hp"],
 ];
 
-const GROUP_LABELS = {
-  land: "Land (Pakistan)",
-  common: "Everyday units",
-  engineering: "Engineering",
-  heat: "Heat and temperature",
-  electricity: "Electricity",
-  magnetism: "Magnetism",
-  fluids: "Fluids",
-  light: "Light",
-  radiology: "Radiology",
-  other: "Other",
-};
-
+const cardClass =
+  "flex h-full min-h-14 flex-col justify-center rounded-card border border-line bg-surface px-5 py-4 shadow-card transition-colors hover:border-accent";
 const linkClass = "text-ink transition-colors hover:text-accent";
 
 export default function Home() {
-  const topLand = TOP_LAND.map(getPageBySlug).filter(Boolean);
+  const popular = POPULAR.map((p) => ({ ...p, href: p.href ?? pageUrl(getPageBySlug(p.slug)) }));
   const pairs = COMMON_PAIRS.map((row) => row.map(getPageBySlug)).filter((row) => row.every(Boolean));
-  const groups = Object.keys(GROUP_LABELS)
-    .map((g) => ({ id: g, label: GROUP_LABELS[g], categories: CATEGORIES.filter((c) => c.group === g) }))
-    .filter((g) => g.categories.length > 0);
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-12 sm:py-20">
       <JsonLd data={organizationSchema()} />
       <JsonLd data={websiteSchema()} />
+
       <section>
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Every measurement, one place.</h1>
         <p className="mt-4 text-lg text-muted">
-          {SITE_NAME} converts Pakistani land units like marla, kanal and acre, plus everyday units for
-          length, weight, temperature and volume.
+          {SITE_NAME} is a free converter for units from around the world: length, weight, temperature,
+          currency, engineering, science and more, with Pakistani land units built in.
         </p>
         <div className="mt-8">
-          <SearchBox size="lg" placeholder="Try “marla”, “kg to lbs” or “cm”" />
+          <SearchBox size="lg" placeholder="Try “kg to lbs”, “marla” or “Nm”" />
         </div>
       </section>
 
       <section className="mt-16">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className="text-xl font-semibold tracking-tight">Land units (Pakistan)</h2>
-          <Link href="/zameen" className="text-sm font-medium text-accent transition-colors hover:text-accent-hover">
-            All land units →
-          </Link>
-        </div>
-        <PageCards pages={topLand} size="lg" />
+        <h2 className="text-xl font-semibold tracking-tight">Popular</h2>
+        <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {popular.map((p) => (
+            <li key={p.href}>
+              <Link href={p.href} className={cardClass}>
+                <span className="font-medium text-ink">{p.name}</span>
+                <span className="mt-1 text-sm text-muted">{p.hint}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="mt-16">
@@ -108,51 +103,44 @@ export default function Home() {
       </section>
 
       <section className="mt-16">
-        <h2 className="text-xl font-semibold tracking-tight">Tools</h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-          {TOOLS.map((t) => (
-            <li key={t.id}>
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="text-xl font-semibold tracking-tight">All converters</h2>
+          <Link
+            href={ALL_CONVERTERS_PAGE.path}
+            className="inline-flex min-h-11 items-center text-sm font-medium text-accent transition-colors hover:text-accent-hover"
+          >
+            Full list →
+          </Link>
+        </div>
+        <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+          {CONVERTER_GROUPS.map((g) => (
+            <li key={g.id} className="rounded-card border border-line bg-surface p-5 shadow-card">
+              <div className="flex items-baseline justify-between gap-3">
+                <h3 className="font-semibold">{g.name}</h3>
+                <span className="shrink-0 text-sm text-muted">
+                  {g.items.length} {g.items.length === 1 ? "converter" : "converters"}
+                </span>
+              </div>
+              <ul className="mt-1 text-sm">
+                {g.items.slice(0, 5).map((item) => (
+                  <li key={item.id}>
+                    <Link href={item.href} className="flex min-h-11 items-center text-muted transition-colors hover:text-accent">
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
               <Link
-                href={`/${t.id}`}
-                className="flex h-full min-h-14 flex-col justify-center rounded-card border border-line bg-surface px-5 py-4 shadow-card transition-colors hover:border-accent"
+                href={g.path}
+                className="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-accent transition-colors hover:text-accent-hover"
+                aria-label={`See all ${g.name.toLowerCase()} converters`}
               >
-                <span className="font-medium text-ink">{t.h1}</span>
+                See all →
               </Link>
             </li>
           ))}
         </ul>
       </section>
-
-      {groups.map((g) => (
-        <section key={g.id} className="mt-16">
-          <h2 className="text-xl font-semibold tracking-tight">{g.label}</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {g.categories.map((c) => {
-              const pages = PAGES.filter((p) => p.category === c.id && p.tool !== "plot-size");
-              return (
-                <div key={c.id} className="rounded-card border border-line bg-surface p-5 shadow-card">
-                  <h3 className="font-semibold">
-                    <Link href={`/${c.id}`} className="transition-colors hover:text-accent">
-                      {c.h1}
-                    </Link>
-                  </h3>
-                  {pages.length > 0 && (
-                    <ul className="mt-2 text-sm">
-                      {pages.map((p) => (
-                        <li key={p.slug}>
-                          <Link href={pageUrl(p)} className="flex min-h-11 items-center text-muted transition-colors hover:text-accent">
-                            {p.h1}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      ))}
     </main>
   );
 }

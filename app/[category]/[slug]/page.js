@@ -10,6 +10,7 @@ import PageCards from "@/components/PageCards";
 import { PAGES, POPULAR_SIZE_PAGES, getPage, getPageBySlug, pageUrl } from "@/lib/pages";
 import { getCategory } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
+import { groupCrumbFor } from "@/lib/groups";
 import { faqSchema, webApplicationSchema } from "@/lib/schema";
 
 // The whole page must be static (the build fails if something makes it
@@ -122,9 +123,10 @@ export default async function ConverterPage({ params }) {
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
+          groupCrumbFor(page.category),
           { name: getCategory(page.category)?.name ?? page.category, path: `/${page.category}` },
           { name: page.h1, path: pageUrl(page) },
-        ]}
+        ].filter(Boolean)}
       />
       <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{page.h1}</h1>
       {page.quickAnswer && <p className="mt-3 text-xl font-semibold text-accent">{page.quickAnswer}</p>}

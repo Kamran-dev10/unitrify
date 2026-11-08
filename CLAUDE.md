@@ -56,15 +56,18 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 
 # Project status
 
-- `lib/categories/`: one file per unit category + `index.js` registry; `helpers.js` builds units. Land URL id is `zameen`.
-- Unit kinds: `linear` (base = v × factor), `affine` (base = v × factor + offset), `inverse` (base = factor ÷ v; 0 → null).
-- `lib/convert.js`: engine (`convert`, `formatSmart`); `lib/units.js` is a legacy wrapper; `"area"` falls back to `zameen` for marla/kanal.
+- Worldwide converter: 80+ unit categories in 10 groups + tools; Pakistani land (`/zameen`) stays a strong category.
+- `lib/categories/`: one file per category + `index.js` registry (`GROUPS`); `helpers.js` builds units. Kinds: `linear`, `affine`, `inverse` (0 → null).
+- Category extras: `buildUnits(options)` + `hasMarlaStandard` (land) or `option` (typography base font, shown by `UnitOptionPicker`); `note` (radiology disclaimer); `searchAliases`.
+- `lib/convert.js`: engine (`convert`, `formatSmart`); `lib/units.js` legacy wrapper; `"area"` falls back to `zameen`.
 - `lib/categories.js`: category page text + FAQs (server only). `lib/site-pages.js`: home/about/contact/privacy meta.
-- Pair pages: `lib/pages.js` (land + first pages) and `lib/pages-common.js` → `PAGES`, rendered by `app/[category]/[slug]`.
-- Tools: `lib/tools.js` (case, number, currency + their pair pages) with logic in `lib/text-case.js`, `number-base.js`, `roman.js`, `currency.js`.
-- Currency: `lib/currency-rates.js` fetches open.er-api.com in `"use cache"` once per 24 h; runtime failure keeps last good page; build failure shows a message and retries hourly. Never hand-write rates.
-- Components: `Converter`, `AllUnitsConverter`, `ConversionTable`, `UnitsTable`, `PlotCalculator`, `PlotSizeAnswer`, tool components, `ResultBox`, `ToolShell`, `FaqSection`.
+- Pair pages: `lib/pages.js` + `pages-common.js`, `pages-technical.js`, `pages-electric.js`, `pages-science.js` → `PAGES`, rendered by `app/[category]/[slug]`.
+- Tools: `lib/tools.js` (case, number, currency + pair pages); logic in `lib/text-case.js`, `number-base.js`, `roman.js`, `currency.js`, `download-time.js`, `sound-pressure.js`.
+- Groups: `lib/groups.js` (names, page text, items, `groupCrumbFor`, `menuGroups`) → `/converters` (HTML sitemap) and `/converters/<group>`, header menu, homepage, footer, breadcrumbs (Home › Group › Category › Page).
+- Header: `AllConvertersMenu` (desktop columns, phone full-screen accordion; Esc, focus trap). Search loads `/search-index.json` (route handler, prerendered) on first focus; matching in `lib/search-match.js`.
+- Currency: `lib/currency-rates.js` fetches open.er-api.com in `"use cache"` once per 24 h; runtime failure keeps last good page; build failure shows a message, retries hourly. Never hand-write rates; `RatesAttribution` on every rates page.
 - Dynamic routes use `ensureStatic = "navigation"` + `instant = false` (real 404s, fully prerendered).
-- Keyword rule: primary in title or h1, exactly once in the description; 2-4 secondary; primary unique. Titles < 60 (with `buildTitle`), descriptions 110-155 and unique.
-- Related rule: same category first, then same group, then `"/<category>"`; never an unrelated category. Tool pages link within their tool.
-- Tests (`tests/`): convert, engine, common, common-pages, pages, plotsizes, tools, tool-pages, schema, seo, descriptions.
+- Keyword rule: primary in title or h1, once in the description; 2-4 secondary; primary unique. Titles < 60 (`buildTitle`), descriptions 110-155, unique.
+- Related rule: same category first, then same group, then `"/<category>"`; never an unrelated category.
+- Tests (`tests/`): engine, convert, common, pages, seo, descriptions, schema, tools, groups, one file per new unit batch. Audit scripts (sitemap, links, a11y, JS size, duplicates) were run ad hoc, not in the repo.
+- Known: 404 pages render their content on the client (Next.js shell); input border token `line` is ~1.2:1 against white.
