@@ -9,7 +9,7 @@ export default function PageCards({ pages, size = "sm", columns = 2 }) {
       {pages.map((p) => (
         <li key={p.slug}>
           <Link
-            href={pageUrl(p)}
+            href={p.href ?? pageUrl(p)}
             className="flex h-full min-h-14 flex-col justify-center rounded-card border border-line bg-surface px-5 py-4 shadow-card transition-colors hover:border-accent"
           >
             <span className="font-medium text-ink">{p.h1}</span>

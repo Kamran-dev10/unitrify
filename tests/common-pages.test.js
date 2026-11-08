@@ -26,8 +26,8 @@ describe("quick answers", () => {
 });
 
 describe("common pair pages", () => {
-  it("there are 47 new pages, all in PAGES", () => {
-    expect(COMMON_PAGES.length).toBe(47);
+  it("there are 57 common pages, all in PAGES", () => {
+    expect(COMMON_PAGES.length).toBe(57);
     for (const p of COMMON_PAGES) expect(PAGES).toContain(p);
   });
 
@@ -43,9 +43,10 @@ describe("common pair pages", () => {
   // Keyword rules: the primary keyword is in the title or h1 and appears
   // exactly once in the meta description; 2-4 secondary keywords; every
   // primary keyword is unique.
-  it("keyword rules", () => {
+  it("keyword rules (every pair page)", () => {
     const seen = new Set();
-    for (const p of COMMON_PAGES) {
+    for (const p of PAGES) {
+      expect(p.keywords, `${p.slug}: no keywords`).toBeTruthy();
       const primary = p.keywords.primary.toLowerCase();
       expect(seen.has(primary), `${p.slug}: duplicate primary`).toBe(false);
       seen.add(primary);

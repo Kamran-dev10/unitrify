@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cacheLife } from "next/cache";
 import { SITE_NAME } from "@/lib/config";
 import { CATEGORIES } from "@/lib/categories";
+import { TOOLS } from "@/lib/tools";
 
 // The year is read once at build time and cached, so the footer stays static.
 async function getYear() {
@@ -25,6 +26,13 @@ export default async function Footer() {
                 <li key={c.id}>
                   <Link href={`/${c.id}`} className={linkClass}>
                     {c.name}
+                  </Link>
+                </li>
+              ))}
+              {TOOLS.map((t) => (
+                <li key={t.id}>
+                  <Link href={`/${t.id}`} className={linkClass}>
+                    {t.name}
                   </Link>
                 </li>
               ))}

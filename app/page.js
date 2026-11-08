@@ -8,6 +8,7 @@ import SearchBox from "@/components/SearchBox";
 import PageCards from "@/components/PageCards";
 import JsonLd from "@/components/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
+import { TOOLS } from "@/lib/tools";
 
 export const metadata = buildMetadata(SITE_PAGES.home);
 
@@ -93,6 +94,22 @@ export default function Home() {
               </Link>
               <Link href={pageUrl(b)} className={`${linkClass} flex min-h-11 items-center`}>
                 {b.h1}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-16">
+        <h2 className="text-xl font-semibold tracking-tight">Tools</h2>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+          {TOOLS.map((t) => (
+            <li key={t.id}>
+              <Link
+                href={`/${t.id}`}
+                className="flex h-full min-h-14 flex-col justify-center rounded-card border border-line bg-surface px-5 py-4 shadow-card transition-colors hover:border-accent"
+              >
+                <span className="font-medium text-ink">{t.h1}</span>
               </Link>
             </li>
           ))}

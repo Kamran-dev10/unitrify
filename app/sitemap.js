@@ -1,5 +1,6 @@
 import { PAGES, pageUrl } from "@/lib/pages";
 import { CATEGORIES } from "@/lib/categories";
+import { TOOLS, TOOL_PAGES, toolPageUrl } from "@/lib/tools";
 import { absoluteUrl } from "@/lib/schema";
 
 // BUILD_DATE is set in next.config.mjs when the site is built.
@@ -10,6 +11,8 @@ export default function sitemap() {
     "/",
     ...CATEGORIES.map((c) => `/${c.id}`),
     ...PAGES.map(pageUrl),
+    ...TOOLS.map((t) => `/${t.id}`),
+    ...TOOL_PAGES.map(toolPageUrl),
     "/about",
     "/contact",
     "/privacy-policy",

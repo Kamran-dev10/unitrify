@@ -69,7 +69,14 @@ export default async function ConverterPage({ params }) {
   const content = <IntroAndFormula page={page} />;
   const examples = page.examples ?? [];
   const faqs = page.faqs ?? [];
-  const related = (page.related ?? []).map(getPageBySlug).filter(Boolean);
+  // Related entries are page slugs, or "/<category>" for the category page.
+  const related = (page.related ?? [])
+    .map((r) => {
+      if (!r.startsWith("/")) return getPageBySlug(r);
+      const c = getCategory(r.slice(1));
+      return c && { slug: c.id, h1: c.h1, href: r };
+    })
+    .filter(Boolean);
 
   let tool;
   if (page.tool === "plot") {
