@@ -53,3 +53,18 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 - No popups, no clutter, no more than one accent colour on a screen.
 - Mobile first: big touch targets (min 44px), everything readable on a phone.
 - Subtle transitions only (150ms), no flashy animations.
+
+# Project status
+
+- `lib/categories/`: one file per unit category + `index.js` registry; `helpers.js` builds units. Land URL id is `zameen`.
+- Unit kinds: `linear` (base = v × factor), `affine` (base = v × factor + offset), `inverse` (base = factor ÷ v; 0 → null).
+- `lib/convert.js`: engine (`convert`, `formatSmart`); `lib/units.js` is a legacy wrapper; `"area"` falls back to `zameen` for marla/kanal.
+- `lib/categories.js`: category page text + FAQs (server only). `lib/site-pages.js`: home/about/contact/privacy meta.
+- Pair pages: `lib/pages.js` (land + first pages) and `lib/pages-common.js` → `PAGES`, rendered by `app/[category]/[slug]`.
+- Tools: `lib/tools.js` (case, number, currency + their pair pages) with logic in `lib/text-case.js`, `number-base.js`, `roman.js`, `currency.js`.
+- Currency: `lib/currency-rates.js` fetches open.er-api.com in `"use cache"` once per 24 h; runtime failure keeps last good page; build failure shows a message and retries hourly. Never hand-write rates.
+- Components: `Converter`, `AllUnitsConverter`, `ConversionTable`, `UnitsTable`, `PlotCalculator`, `PlotSizeAnswer`, tool components, `ResultBox`, `ToolShell`, `FaqSection`.
+- Dynamic routes use `ensureStatic = "navigation"` + `instant = false` (real 404s, fully prerendered).
+- Keyword rule: primary in title or h1, exactly once in the description; 2-4 secondary; primary unique. Titles < 60 (with `buildTitle`), descriptions 110-155 and unique.
+- Related rule: same category first, then same group, then `"/<category>"`; never an unrelated category. Tool pages link within their tool.
+- Tests (`tests/`): convert, engine, common, common-pages, pages, plotsizes, tools, tool-pages, schema, seo, descriptions.
