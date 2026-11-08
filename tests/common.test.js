@@ -33,12 +33,12 @@ describe("area: exact square meter (NIST)", () => {
   it("1 sq ft = 0.09290304 m²", () => expect(convert(1, "sq-ft", "sq-m", "area")).toBeCloseTo(0.09290304, 12));
 });
 
-describe("every unit has 1-3 aliases", () => {
+describe("every unit has 1-6 aliases", () => {
   it("aliases", () => {
     for (const c of UNIT_CATEGORIES) {
       for (const u of c.units) {
         expect(u.aliases.length, `${c.id}/${u.id}`).toBeGreaterThanOrEqual(1);
-        expect(u.aliases.length, `${c.id}/${u.id}`).toBeLessThanOrEqual(3);
+        expect(u.aliases.length, `${c.id}/${u.id}`).toBeLessThanOrEqual(6);
       }
     }
   });

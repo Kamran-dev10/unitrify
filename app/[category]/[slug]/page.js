@@ -44,9 +44,10 @@ export async function generateMetadata({ params }) {
 
 
 function IntroAndFormula({ page }) {
-  if (!page.intro && !page.formula) return null;
+  if (!page.intro && !page.formula && !page.note) return null;
   return (
     <section className="mt-10">
+      {page.note && <p className="mb-6 text-sm leading-relaxed text-muted">{page.note}</p>}
       {page.intro && <p className="text-lg leading-relaxed">{page.intro}</p>}
       {page.formula && (
         <div className="mt-6">
@@ -96,6 +97,7 @@ export default async function ConverterPage({ params }) {
         category={page.unitCategory}
         defaultFrom={page.from}
         defaultTo={page.to}
+        defaultValue={page.defaultValue}
         alsoShow={page.alsoShow}
         tableFrom={page.from}
         tableTo={page.to}
@@ -118,6 +120,7 @@ export default async function ConverterPage({ params }) {
         ]}
       />
       <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{page.h1}</h1>
+      {page.quickAnswer && <p className="mt-3 text-xl font-semibold text-accent">{page.quickAnswer}</p>}
 
       <div className="mt-8">{tool}</div>
 
