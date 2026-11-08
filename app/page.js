@@ -24,6 +24,9 @@ const TOP_LAND = [
 export default function Home() {
   const topLand = TOP_LAND.map(getPageBySlug).filter(Boolean);
   const others = CATEGORIES.filter((c) => c.id !== "zameen");
+  const hasPages = (c) => PAGES.some((p) => p.category === c.id);
+  const withPages = others.filter(hasPages);
+  const withoutPages = others.filter((c) => !hasPages(c));
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-12 sm:py-20">
@@ -50,7 +53,7 @@ export default function Home() {
         <PageCards pages={topLand} size="lg" />
       </section>
 
-      {others.map((c) => (
+      {withPages.map((c) => (
         <section key={c.id} className="mt-12">
           <h2 className="text-xl font-semibold tracking-tight">
             <Link href={`/${c.id}`} className="transition-colors hover:text-accent">
@@ -60,6 +63,24 @@ export default function Home() {
           <PageCards pages={PAGES.filter((p) => p.category === c.id)} />
         </section>
       ))}
+
+      {withoutPages.length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-xl font-semibold tracking-tight">More converters</h2>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {withoutPages.map((c) => (
+              <li key={c.id}>
+                <Link
+                  href={`/${c.id}`}
+                  className="flex h-full min-h-14 items-center rounded-card border border-line bg-surface px-5 py-4 font-medium shadow-card transition-colors hover:border-accent"
+                >
+                  {c.h1}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </main>
   );
 }
