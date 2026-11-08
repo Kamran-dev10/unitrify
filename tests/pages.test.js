@@ -55,7 +55,8 @@ describe("page data", () => {
       const expected = Math.min(3, sameCat.length + sameGroup.length + 1);
       expect(rel.length, `${p.slug}: related count`).toBe(expected);
       expect(catLinks, `${p.slug}: use same-category pages first`).toBe(Math.min(3, sameCat.length));
-      if (categoryPage > 0) expect(sameGroup.length, `${p.slug}: group pages available`).toBe(0);
+      expect(groupLinks, `${p.slug}: use group pages before the category page`).toBe(Math.min(3 - catLinks, sameGroup.length));
+      if (categoryPage > 0) expect(sameCat.length + sameGroup.length, `${p.slug}: enough pages without the category page`).toBeLessThan(3);
     }
   });
 });
