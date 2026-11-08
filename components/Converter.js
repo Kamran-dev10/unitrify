@@ -5,6 +5,8 @@ import { convert, formatSmart, getUnits, hasMarlaStandard, inputMessage } from "
 import { MARLA_STANDARDS } from "@/lib/units";
 import ConversionTable from "@/components/ConversionTable";
 import MarlaSizePicker from "@/components/MarlaSizePicker";
+import UnitOptionPicker from "@/components/UnitOptionPicker";
+import { getUnitCategory } from "@/lib/categories/index";
 import ResultBox from "@/components/ResultBox";
 
 const selectClass =
@@ -17,7 +19,7 @@ const selectClass =
 //   defaultValue optional: starting value in the input (default "1")
 //   alsoShow     optional: extra unit ids shown in small text under the result
 //   tableFrom / tableTo  optional: show a ConversionTable for this pair.
-//                It follows the marla size picked here.
+//                It follows the marla size (or category option) picked here.
 //   children     optional: content shown between the converter and the
 //                table (e.g. intro and formula from the page).
 export default function Converter({
@@ -34,9 +36,12 @@ export default function Converter({
   const [fromId, setFromId] = useState(defaultFrom);
   const [toId, setToId] = useState(defaultTo);
   const [marlaSize, setMarlaSize] = useState(MARLA_STANDARDS.revenue);
+  // A category setting such as the base font size for em/rem (category.option).
+  const option = getUnitCategory(category)?.option;
+  const [optionValue, setOptionValue] = useState(option?.defaultValue);
   const id = useId();
 
-  const options = { marlaSize };
+  const options = option ? { marlaSize, [option.key]: optionValue } : { marlaSize };
   const units = getUnits(category, options);
   const toUnit = units.find((u) => u.id === toId);
   const result = convert(value, fromId, toId, category, options);
@@ -125,6 +130,7 @@ export default function Converter({
         </div>
 
         {hasMarlaStandard(category) && <MarlaSizePicker value={marlaSize} onChange={setMarlaSize} />}
+        {option && <UnitOptionPicker option={option} value={optionValue} onChange={setOptionValue} />}
 
         <ResultBox
           value={isEmpty ? "" : resultText}
@@ -152,7 +158,7 @@ export default function Converter({
       {children}
 
       {tableFrom && tableTo && (
-        <ConversionTable category={category} fromId={tableFrom} toId={tableTo} marlaSize={marlaSize} />
+        <ConversionTable category={category} fromId={tableFrom} toId={tableTo} marlaSize={marlaSize} options={options} />
       )}
     </>
   );

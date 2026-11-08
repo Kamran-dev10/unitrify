@@ -13,8 +13,10 @@ export default function ConversionTable({
   fromId,
   toId,
   marlaSize = MARLA_STANDARDS.revenue,
+  options: extraOptions = {}, // other category options, e.g. { baseFontPx: 16 }
 }) {
-  const units = getUnits(category, { marlaSize });
+  const options = { ...extraOptions, marlaSize };
+  const units = getUnits(category, options);
   const from = units.find((u) => u.id === fromId);
   const to = units.find((u) => u.id === toId);
   if (!from || !to) return null;
@@ -52,7 +54,7 @@ export default function ConversionTable({
                   {n} {from.symbol}
                 </td>
                 <td className="whitespace-nowrap px-5 py-3 font-medium">
-                  {formatResult(convert(n, fromId, toId, category, { marlaSize }))} {to.symbol}
+                  {formatResult(convert(n, fromId, toId, category, options))} {to.symbol}
                 </td>
               </tr>
             ))}

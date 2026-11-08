@@ -5,6 +5,7 @@ import { convert, formatSmart, getUnits, hasMarlaStandard, inputMessage } from "
 import { getUnitCategory } from "@/lib/categories/index";
 import { MARLA_STANDARDS } from "@/lib/units";
 import MarlaSizePicker from "@/components/MarlaSizePicker";
+import UnitOptionPicker from "@/components/UnitOptionPicker";
 import CopyButton from "@/components/CopyButton";
 
 const fieldClass =
@@ -17,10 +18,12 @@ export default function AllUnitsConverter({ category }) {
   const [value, setValue] = useState("1");
   const [fromId, setFromId] = useState(cat?.defaultFrom ?? cat?.baseUnit);
   const [marlaSize, setMarlaSize] = useState(MARLA_STANDARDS.revenue);
+  const option = cat?.option;
+  const [optionValue, setOptionValue] = useState(option?.defaultValue);
   const id = useId();
 
   if (!cat) return null;
-  const options = { marlaSize };
+  const options = option ? { marlaSize, [option.key]: optionValue } : { marlaSize };
   const units = getUnits(category, options);
   const isEmpty = value.trim() === "";
   const message = isEmpty ? "" : inputMessage(value, category);
@@ -64,6 +67,7 @@ export default function AllUnitsConverter({ category }) {
       </div>
 
       {hasMarlaStandard(category) && <MarlaSizePicker value={marlaSize} onChange={setMarlaSize} />}
+      {option && <UnitOptionPicker option={option} value={optionValue} onChange={setOptionValue} />}
 
       {/* Same height whether a message shows or not, so nothing jumps. */}
       <p id={`${id}-message`} className="mt-3 min-h-6 text-sm text-ink" aria-live="polite">

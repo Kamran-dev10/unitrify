@@ -9,6 +9,14 @@ import Converter from "@/components/Converter";
 import AllUnitsConverter from "@/components/AllUnitsConverter";
 import UnitsTable from "@/components/UnitsTable";
 import JsonLd from "@/components/JsonLd";
+import DownloadTimeCalculator from "@/components/DownloadTimeCalculator";
+import SoundPressureConverter from "@/components/SoundPressureConverter";
+
+// Extra tools shown on some category pages, under "Convert to all units".
+const EXTRA_TOOLS = {
+  "data-transfer": { title: "Download Time Calculator", Tool: DownloadTimeCalculator },
+  "sound-level": { title: "Sound pressure (Pa) to dB SPL", Tool: SoundPressureConverter },
+};
 
 // Whole page must be static; unknown categories return a real 404.
 export const ensureStatic = "navigation";
@@ -36,6 +44,7 @@ export default async function CategoryPage({ params }) {
 
   const pairPages = PAGES.filter((p) => p.category === c.id && p.tool !== "plot-size");
   const faqs = c.faqs ?? [];
+  const extra = EXTRA_TOOLS[c.id];
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-16">
@@ -47,6 +56,7 @@ export default async function CategoryPage({ params }) {
         ]}
       />
       <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{c.h1}</h1>
+      {c.note && <p className="mt-3 text-sm leading-relaxed text-muted">{c.note}</p>}
 
       <div className="mt-8">
         <Converter category={c.id} defaultFrom={c.defaultFrom} defaultTo={c.defaultTo} />
@@ -58,6 +68,15 @@ export default async function CategoryPage({ params }) {
           <AllUnitsConverter category={c.id} />
         </div>
       </section>
+
+      {extra && (
+        <section className="mt-12">
+          <h2 className="text-xl font-semibold tracking-tight">{extra.title}</h2>
+          <div className="mt-4">
+            <extra.Tool />
+          </div>
+        </section>
+      )}
 
       <p className="mt-12 text-lg leading-relaxed">{c.intro}</p>
 

@@ -51,6 +51,10 @@ const GROUP_LABELS = {
   heat: "Heat and temperature",
   electricity: "Electricity",
   magnetism: "Magnetism",
+  fluids: "Fluids",
+  light: "Light",
+  radiology: "Radiology",
+  other: "Other",
 };
 
 const linkClass = "text-ink transition-colors hover:text-accent";
