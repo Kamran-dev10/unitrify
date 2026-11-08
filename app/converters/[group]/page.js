@@ -59,6 +59,25 @@ export default async function GroupPage({ params }) {
           </li>
         ))}
       </ul>
+
+      {g.about && (
+        <section className="mt-12 space-y-5 text-lg leading-relaxed">
+          <h2 className="text-xl font-semibold tracking-tight">About {g.name.toLowerCase()} units</h2>
+          {g.about.map((para, i) => (
+            <p key={i}>
+              {para.map((part, j) =>
+                typeof part === "string" ? (
+                  part
+                ) : (
+                  <Link key={j} href={part.href} className="text-accent underline transition-colors hover:text-accent-hover">
+                    {part.text}
+                  </Link>
+                ),
+              )}
+            </p>
+          ))}
+        </section>
+      )}
     </main>
   );
 }

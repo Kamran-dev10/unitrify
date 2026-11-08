@@ -1,12 +1,12 @@
 "use client";
 
 import { useId, useState } from "react";
-import { formatSmart } from "@/lib/convert";
+import { formatSmart } from "@/lib/engine";
 import { dbSplToPa, paToDbSpl } from "@/lib/sound-pressure";
 import ResultBox from "@/components/ResultBox";
 
 const inputClass =
-  "mt-2 h-12 w-full rounded-control border border-line bg-surface px-4 text-xl font-semibold outline-none transition-colors focus:border-accent";
+  "mt-2 h-12 w-full rounded-control border border-field bg-surface px-4 text-xl font-semibold outline-none transition-colors focus:border-accent";
 
 const MODES = [
   { id: "pa", label: "Pa to dB SPL", input: "Sound pressure (Pa)", unit: "dB SPL", run: paToDbSpl, start: "1" },
@@ -43,7 +43,7 @@ export default function SoundPressureConverter() {
               className={`h-11 rounded-control border px-4 text-sm transition-colors ${
                 m.id === modeId
                   ? "border-accent bg-accent-tint font-medium text-accent"
-                  : "border-line bg-surface text-ink hover:border-ink"
+                  : "border-field bg-surface text-ink hover:border-ink"
               }`}
             >
               {m.label}

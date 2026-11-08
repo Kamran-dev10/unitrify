@@ -37,7 +37,8 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 | -------------- | --------- | ---------------------------- |
 | `page`         | `#FAFAF7` | Page background (warm off-white) |
 | `surface`      | `#FFFFFF` | Cards                        |
-| `line`         | `#E7E5E0` | 1px card / input borders     |
+| `line`         | `#E7E5E0` | 1px card / divider borders   |
+| `field`        | `#8C8882` | Input, select, button outlines (3:1+) |
 | `ink`          | `#1F2937` | Main text (dark slate)       |
 | `muted`        | `#676D7B` | Secondary text               |
 | `accent`       | `#0F766E` | The one accent (deep green)  |
@@ -45,6 +46,7 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 | `accent-tint`  | `#E6F2EF` | Highlights                   |
 
 - Cards: white, 1px `line` border, very light shadow (`shadow-card`).
+- Form fields and buttons: 1px `field` border (WCAG 1.4.11 needs 3:1).
 - Rounded corners: 12px on inputs and buttons (`rounded-control`), 16px on
   cards (`rounded-card`).
 - Font: Inter via `next/font` for everything.
@@ -70,4 +72,5 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 - Keyword rule: primary in title or h1, once in the description; 2-4 secondary; primary unique. Titles < 60 (`buildTitle`), descriptions 110-155, unique.
 - Related rule: same category first, then same group, then `"/<category>"`; never an unrelated category.
 - Tests (`tests/`): engine, convert, common, pages, seo, descriptions, schema, tools, groups, one file per new unit batch. Audit scripts (sitemap, links, a11y, JS size, duplicates) were run ad hoc, not in the repo.
-- Known: 404 pages render their content on the client (Next.js shell); input border token `line` is ~1.2:1 against white.
+- Client components never import the unit registry: pages pass `categoryData(id)` (`lib/category-data.js`) and components use `lib/engine.js`.
+- Known: 404 pages render their content on the client (Next.js shell).

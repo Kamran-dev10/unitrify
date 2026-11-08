@@ -1,5 +1,6 @@
 import { formatResult, plotSizeSummary } from "@/lib/convert";
 import Converter from "@/components/Converter";
+import { categoryData } from "@/lib/category-data";
 
 const STANDARDS = [
   { key: "revenue", label: "272.25 sq ft marla" },
@@ -58,7 +59,7 @@ export default function PlotSizeAnswer({ size, unitId, name }) {
 
       <div className="mt-8">
         <h2 className="mb-4 text-xl font-semibold tracking-tight">Convert another size</h2>
-        <Converter category="zameen"defaultFrom={unitId} defaultTo="sq-ft" defaultValue={size} />
+        <Converter data={categoryData("zameen")} defaultFrom={unitId} defaultTo="sq-ft" defaultValue={size} />
       </div>
     </>
   );

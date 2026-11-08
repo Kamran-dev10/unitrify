@@ -103,7 +103,7 @@ export default function Search({ size = "md", placeholder = "Search converters" 
         aria-controls={listId}
         aria-autocomplete="list"
         aria-activedescendant={showList && active >= 0 ? `${id}-opt-${active}` : undefined}
-        className={`w-full rounded-control border border-line bg-surface outline-none transition-colors placeholder:text-muted focus:border-accent ${inputSize}`}
+        className={`w-full rounded-control border border-field bg-surface outline-none transition-colors placeholder:text-muted focus:border-accent ${inputSize}`}
       />
 
       {showList && (

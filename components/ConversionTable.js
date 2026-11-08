@@ -1,5 +1,4 @@
-import { convert, formatResult, getUnits, hasMarlaStandard } from "@/lib/convert";
-import { MARLA_STANDARDS } from "@/lib/units";
+import { convertWith, formatResult, unitsFor } from "@/lib/engine";
 
 const ROWS = [
   ...Array.from({ length: 20 }, (_, i) => i + 1),
@@ -9,20 +8,19 @@ const ROWS = [
 // Plain HTML table of common values. No hooks, so it works both on the
 // server and inside the Converter (where it follows the marla standard).
 export default function ConversionTable({
-  category,
+  data, // unit data of ONE category, from categoryData() in lib/category-data.js
   fromId,
   toId,
-  marlaSize = MARLA_STANDARDS.revenue,
-  options: extraOptions = {}, // other category options, e.g. { baseFontPx: 16 }
+  options = {}, // the category setting, e.g. { marlaSize: 250 } or { baseFontPx: 16 }
 }) {
-  const options = { ...extraOptions, marlaSize };
-  const units = getUnits(category, options);
+  const units = unitsFor(data, options);
+  const marlaSize = options.marlaSize ?? data?.option?.defaultValue;
   const from = units.find((u) => u.id === fromId);
   const to = units.find((u) => u.id === toId);
   if (!from || !to) return null;
 
   const usesMarla =
-    hasMarlaStandard(category) && ["marla", "kanal"].some((id) => id === fromId || id === toId);
+    data.option?.key === "marlaSize" && ["marla", "kanal"].some((id) => id === fromId || id === toId);
 
   return (
     <section className="mt-12">
@@ -54,7 +52,7 @@ export default function ConversionTable({
                   {n} {from.symbol}
                 </td>
                 <td className="whitespace-nowrap px-5 py-3 font-medium">
-                  {formatResult(convert(n, fromId, toId, category, options))} {to.symbol}
+                  {formatResult(convertWith(data, n, fromId, toId, options))} {to.symbol}
                 </td>
               </tr>
             ))}

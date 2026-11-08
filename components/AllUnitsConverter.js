@@ -1,32 +1,27 @@
 "use client";
 
 import { useId, useState } from "react";
-import { convert, formatSmart, getUnits, hasMarlaStandard, inputMessage } from "@/lib/convert";
-import { getUnitCategory } from "@/lib/categories/index";
-import { MARLA_STANDARDS } from "@/lib/units";
-import MarlaSizePicker from "@/components/MarlaSizePicker";
+import { convertWith, formatSmart, inputMessageFor, unitsFor } from "@/lib/engine";
 import UnitOptionPicker from "@/components/UnitOptionPicker";
 import CopyButton from "@/components/CopyButton";
 
 const fieldClass =
-  "mt-2 h-12 w-full rounded-control border border-line bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
+  "mt-2 h-12 w-full rounded-control border border-field bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
 
 // One value in every unit of a category.
-// Props: category (unit category id, e.g. "length").
-export default function AllUnitsConverter({ category }) {
-  const cat = getUnitCategory(category);
+// Props: data (unit data of ONE category, from categoryData() in lib/category-data.js).
+export default function AllUnitsConverter({ data }) {
   const [value, setValue] = useState("1");
-  const [fromId, setFromId] = useState(cat?.defaultFrom ?? cat?.baseUnit);
-  const [marlaSize, setMarlaSize] = useState(MARLA_STANDARDS.revenue);
-  const option = cat?.option;
+  const [fromId, setFromId] = useState(data?.defaultFrom);
+  const option = data?.option;
   const [optionValue, setOptionValue] = useState(option?.defaultValue);
   const id = useId();
 
-  if (!cat) return null;
-  const options = option ? { marlaSize, [option.key]: optionValue } : { marlaSize };
-  const units = getUnits(category, options);
+  if (!data) return null;
+  const options = option ? { [option.key]: optionValue } : {};
+  const units = unitsFor(data, options);
   const isEmpty = value.trim() === "";
-  const message = isEmpty ? "" : inputMessage(value, category);
+  const message = isEmpty ? "" : inputMessageFor(value, data.allowNegative);
 
   return (
     <section className="rounded-card border border-line bg-surface p-5 shadow-card sm:p-8">
@@ -66,7 +61,6 @@ export default function AllUnitsConverter({ category }) {
         </div>
       </div>
 
-      {hasMarlaStandard(category) && <MarlaSizePicker value={marlaSize} onChange={setMarlaSize} />}
       {option && <UnitOptionPicker option={option} value={optionValue} onChange={setOptionValue} />}
 
       {/* Same height whether a message shows or not, so nothing jumps. */}
@@ -88,7 +82,7 @@ export default function AllUnitsConverter({ category }) {
           </thead>
           <tbody>
             {units.map((u) => {
-              const text = message || isEmpty ? "" : formatSmart(convert(value, fromId, u.id, category, options));
+              const text = message || isEmpty ? "" : formatSmart(convertWith(data, value, fromId, u.id, options));
               const selected = u.id === fromId;
               return (
                 <tr key={u.id} className={`border-b border-line last:border-b-0 ${selected ? "bg-accent-tint" : ""}`}>

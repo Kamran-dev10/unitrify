@@ -1,24 +1,24 @@
 "use client";
 
 import { useId, useState } from "react";
-import { getUnits } from "@/lib/convert";
-import { downloadSeconds, formatDuration } from "@/lib/download-time";
+import { downloadSecondsWith, formatDuration } from "@/lib/download-time-core";
 import ResultBox from "@/components/ResultBox";
 
 const inputClass =
-  "mt-2 h-12 w-full rounded-control border border-line bg-surface px-4 text-xl font-semibold outline-none transition-colors focus:border-accent";
+  "mt-2 h-12 w-full rounded-control border border-field bg-surface px-4 text-xl font-semibold outline-none transition-colors focus:border-accent";
 const selectClass =
-  "select-chevron mt-2 h-12 w-full appearance-none rounded-control border border-line bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
+  "select-chevron mt-2 h-12 w-full appearance-none rounded-control border border-field bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
 
 // File size (any data-storage unit) + speed (any data-transfer unit) -> time.
-export default function DownloadTimeCalculator() {
+// Props: storage, transfer (unit data from categoryData("data-storage") / ("data-transfer")).
+export default function DownloadTimeCalculator({ storage, transfer }) {
   const [size, setSize] = useState("1");
   const [sizeUnit, setSizeUnit] = useState("gb");
   const [speed, setSpeed] = useState("100");
   const [speedUnit, setSpeedUnit] = useState("mbps");
   const id = useId();
 
-  const seconds = downloadSeconds(size, sizeUnit, speed, speedUnit);
+  const seconds = downloadSecondsWith(storage, transfer, size, sizeUnit, speed, speedUnit);
   const text = formatDuration(seconds);
   const isEmpty = size.trim() === "" || speed.trim() === "";
   const message = !isEmpty && seconds === null ? "Please enter a size and a speed above 0." : "";
@@ -62,8 +62,8 @@ export default function DownloadTimeCalculator() {
   return (
     <section className="rounded-card border border-line bg-surface p-5 shadow-card sm:p-8">
       <div className="space-y-5">
-        {row("File size", size, setSize, sizeUnit, setSizeUnit, getUnits("data-storage"))}
-        {row("Speed", speed, setSpeed, speedUnit, setSpeedUnit, getUnits("data-transfer"))}
+        {row("File size", size, setSize, sizeUnit, setSizeUnit, storage.units)}
+        {row("Speed", speed, setSpeed, speedUnit, setSpeedUnit, transfer.units)}
       </div>
       <ResultBox label="Download time" value={isEmpty ? "" : text} copyText={isEmpty ? "" : text} message={message} />
       <p className="mt-3 text-sm text-muted">

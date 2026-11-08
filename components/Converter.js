@@ -1,29 +1,26 @@
 "use client";
 
 import { useId, useState } from "react";
-import { convert, formatSmart, getUnits, hasMarlaStandard, inputMessage } from "@/lib/convert";
-import { MARLA_STANDARDS } from "@/lib/units";
+import { convertWith, formatSmart, inputMessageFor, unitsFor } from "@/lib/engine";
 import ConversionTable from "@/components/ConversionTable";
-import MarlaSizePicker from "@/components/MarlaSizePicker";
 import UnitOptionPicker from "@/components/UnitOptionPicker";
-import { getUnitCategory } from "@/lib/categories/index";
 import ResultBox from "@/components/ResultBox";
 
 const selectClass =
-  "select-chevron h-12 w-full appearance-none rounded-control border border-line bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
+  "select-chevron h-12 w-full appearance-none rounded-control border border-field bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
 
 // Props:
-//   category     unit category id from lib/categories/, e.g. "zameen", "length"
+//   data         unit data of ONE category, from categoryData() in lib/category-data.js
 //   defaultFrom  unit id, e.g. "marla"
 //   defaultTo    unit id, e.g. "sq-ft"
 //   defaultValue optional: starting value in the input (default "1")
 //   alsoShow     optional: extra unit ids shown in small text under the result
 //   tableFrom / tableTo  optional: show a ConversionTable for this pair.
-//                It follows the marla size (or category option) picked here.
+//                It follows the marla size (or other category setting) picked here.
 //   children     optional: content shown between the converter and the
 //                table (e.g. intro and formula from the page).
 export default function Converter({
-  category,
+  data,
   defaultFrom,
   defaultTo,
   defaultValue = "1",
@@ -35,28 +32,27 @@ export default function Converter({
   const [value, setValue] = useState(String(defaultValue));
   const [fromId, setFromId] = useState(defaultFrom);
   const [toId, setToId] = useState(defaultTo);
-  const [marlaSize, setMarlaSize] = useState(MARLA_STANDARDS.revenue);
-  // A category setting such as the base font size for em/rem (category.option).
-  const option = getUnitCategory(category)?.option;
+  // The category setting, if any: marla size (land) or base font size (typography).
+  const option = data.option;
   const [optionValue, setOptionValue] = useState(option?.defaultValue);
   const id = useId();
 
-  const options = option ? { marlaSize, [option.key]: optionValue } : { marlaSize };
-  const units = getUnits(category, options);
+  const options = option ? { [option.key]: optionValue } : {};
+  const units = unitsFor(data, options);
   const toUnit = units.find((u) => u.id === toId);
-  const result = convert(value, fromId, toId, category, options);
+  const result = convertWith(data, value, fromId, toId, options);
   const resultText = formatSmart(result);
   const extras = alsoShow
     .filter((extraId) => extraId !== toId)
     .map((extraId) => ({
       unit: units.find((u) => u.id === extraId),
-      text: formatSmart(convert(value, fromId, extraId, category, options)),
+      text: formatSmart(convertWith(data, value, fromId, extraId, options)),
     }))
     .filter((e) => e.unit && e.text);
 
   const isEmpty = value.trim() === "";
   const message =
-    !isEmpty && result === null ? inputMessage(value, category) || "This value cannot be converted." : "";
+    !isEmpty && result === null ? inputMessageFor(value, data.allowNegative) || "This value cannot be converted." : "";
 
   function swap() {
     setFromId(toId);
@@ -78,7 +74,7 @@ export default function Converter({
           onChange={(e) => setValue(e.target.value)}
           aria-invalid={message ? true : undefined}
           aria-describedby={message ? `${id}-message` : undefined}
-          className="mt-2 h-16 w-full rounded-control border border-line bg-surface px-4 text-3xl font-semibold outline-none transition-colors focus:border-accent"
+          className="mt-2 h-16 w-full rounded-control border border-field bg-surface px-4 text-3xl font-semibold outline-none transition-colors focus:border-accent"
         />
 
         <div className="mt-5 flex items-end gap-3">
@@ -105,7 +101,7 @@ export default function Converter({
             onClick={swap}
             aria-label="Swap units"
             title="Swap units"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-control border border-line bg-surface text-xl text-muted transition-colors hover:border-ink hover:text-ink"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-control border border-field bg-surface text-xl text-muted transition-colors hover:border-ink hover:text-ink"
           >
             ⇄
           </button>
@@ -129,7 +125,6 @@ export default function Converter({
           </div>
         </div>
 
-        {hasMarlaStandard(category) && <MarlaSizePicker value={marlaSize} onChange={setMarlaSize} />}
         {option && <UnitOptionPicker option={option} value={optionValue} onChange={setOptionValue} />}
 
         <ResultBox
@@ -158,7 +153,7 @@ export default function Converter({
       {children}
 
       {tableFrom && tableTo && (
-        <ConversionTable category={category} fromId={tableFrom} toId={tableTo} marlaSize={marlaSize} options={options} />
+        <ConversionTable data={data} fromId={tableFrom} toId={tableTo} options={options} />
       )}
     </>
   );

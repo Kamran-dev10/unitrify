@@ -3,6 +3,7 @@ import { CATEGORIES, getCategory } from "@/lib/categories";
 import { PAGES, POPULAR_SIZE_PAGES } from "@/lib/pages";
 import { buildMetadata } from "@/lib/seo";
 import { groupCrumbFor } from "@/lib/groups";
+import { categoryData } from "@/lib/category-data";
 import { faqSchema } from "@/lib/schema";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import PageCards from "@/components/PageCards";
@@ -15,8 +16,12 @@ import SoundPressureConverter from "@/components/SoundPressureConverter";
 
 // Extra tools shown on some category pages, under "Convert to all units".
 const EXTRA_TOOLS = {
-  "data-transfer": { title: "Download Time Calculator", Tool: DownloadTimeCalculator },
-  "sound-level": { title: "Sound pressure (Pa) to dB SPL", Tool: SoundPressureConverter },
+  "data-transfer": {
+    title: "Download Time Calculator",
+    Tool: DownloadTimeCalculator,
+    props: () => ({ storage: categoryData("data-storage"), transfer: categoryData("data-transfer") }),
+  },
+  "sound-level": { title: "Sound pressure (Pa) to dB SPL", Tool: SoundPressureConverter, props: () => ({}) },
 };
 
 // Whole page must be static; unknown categories return a real 404.
@@ -46,6 +51,8 @@ export default async function CategoryPage({ params }) {
   const pairPages = PAGES.filter((p) => p.category === c.id && p.tool !== "plot-size");
   const faqs = c.faqs ?? [];
   const extra = EXTRA_TOOLS[c.id];
+  // Only this category's units go to the browser.
+  const data = categoryData(c.id);
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-16">
@@ -61,13 +68,13 @@ export default async function CategoryPage({ params }) {
       {c.note && <p className="mt-3 text-sm leading-relaxed text-muted">{c.note}</p>}
 
       <div className="mt-8">
-        <Converter category={c.id} defaultFrom={c.defaultFrom} defaultTo={c.defaultTo} />
+        <Converter data={data} defaultFrom={c.defaultFrom} defaultTo={c.defaultTo} />
       </div>
 
       <section className="mt-12">
         <h2 className="text-xl font-semibold tracking-tight">Convert to all units</h2>
         <div className="mt-4">
-          <AllUnitsConverter category={c.id} />
+          <AllUnitsConverter data={data} />
         </div>
       </section>
 
@@ -75,7 +82,7 @@ export default async function CategoryPage({ params }) {
         <section className="mt-12">
           <h2 className="text-xl font-semibold tracking-tight">{extra.title}</h2>
           <div className="mt-4">
-            <extra.Tool />
+            <extra.Tool {...extra.props()} />
           </div>
         </section>
       )}

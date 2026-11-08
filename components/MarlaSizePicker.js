@@ -1,7 +1,7 @@
 "use client";
 
-import { formatResult } from "@/lib/convert";
-import { MARLA_STANDARDS } from "@/lib/units";
+import { formatResult } from "@/lib/engine";
+import { MARLA_STANDARDS } from "@/lib/marla";
 
 const OPTIONS = [MARLA_STANDARDS.revenue, MARLA_STANDARDS.scheme, MARLA_STANDARDS.urban];
 
@@ -21,7 +21,7 @@ export default function MarlaSizePicker({ value, onChange }) {
               className={`h-11 rounded-control border px-4 text-sm transition-colors ${
                 active
                   ? "border-accent bg-accent-tint font-medium text-accent"
-                  : "border-line bg-surface text-ink hover:border-ink"
+                  : "border-field bg-surface text-ink hover:border-ink"
               }`}
             >
               {formatResult(size)} sq ft

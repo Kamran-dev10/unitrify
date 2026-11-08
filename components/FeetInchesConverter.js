@@ -1,19 +1,20 @@
 "use client";
 
 import { useId, useState } from "react";
-import { feetInchesToCm, formatResult } from "@/lib/convert";
+import { feetInchesToCmWith, formatResult } from "@/lib/engine";
 import ResultBox from "@/components/ResultBox";
 
 const inputClass =
-  "mt-2 h-16 w-full rounded-control border border-line bg-surface px-4 text-3xl font-semibold outline-none transition-colors focus:border-accent";
+  "mt-2 h-16 w-full rounded-control border border-field bg-surface px-4 text-3xl font-semibold outline-none transition-colors focus:border-accent";
 
 // Height style converter: feet and inches together -> centimeters.
-export default function FeetInchesConverter() {
+// Props: data (length unit data from categoryData("length")).
+export default function FeetInchesConverter({ data }) {
   const [feet, setFeet] = useState("5");
   const [inches, setInches] = useState("4");
   const id = useId();
 
-  const cm = feetInchesToCm(feet, inches);
+  const cm = feetInchesToCmWith(data, feet, inches);
   const isEmpty = feet.trim() === "" && inches.trim() === "";
   const resultText = formatResult(cm);
 

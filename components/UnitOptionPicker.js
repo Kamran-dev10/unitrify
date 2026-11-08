@@ -1,6 +1,6 @@
 "use client";
 
-import { formatResult } from "@/lib/convert";
+import { formatResult } from "@/lib/engine";
 
 // Buttons for a category's one setting (category.option), such as the base
 // font size for em and rem. Same look as MarlaSizePicker.
@@ -21,7 +21,7 @@ export default function UnitOptionPicker({ option, value, onChange }) {
               className={`h-11 min-w-11 rounded-control border px-4 text-sm transition-colors ${
                 active
                   ? "border-accent bg-accent-tint font-medium text-accent"
-                  : "border-line bg-surface text-ink hover:border-ink"
+                  : "border-field bg-surface text-ink hover:border-ink"
               }`}
             >
               {formatResult(choice)} {option.suffix}

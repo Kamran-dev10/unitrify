@@ -1,22 +1,23 @@
 "use client";
 
 import { useId, useState } from "react";
-import { formatResult, plotArea } from "@/lib/convert";
-import { MARLA_STANDARDS } from "@/lib/units";
+import { formatResult, plotAreaWith } from "@/lib/engine";
+import { MARLA_STANDARDS } from "@/lib/marla";
 import MarlaSizePicker from "@/components/MarlaSizePicker";
 import ResultBox from "@/components/ResultBox";
 
 const inputClass =
-  "mt-2 h-16 w-full rounded-control border border-line bg-surface px-4 text-3xl font-semibold outline-none transition-colors focus:border-accent";
+  "mt-2 h-16 w-full rounded-control border border-field bg-surface px-4 text-3xl font-semibold outline-none transition-colors focus:border-accent";
 
 // Length × width in feet -> area in sq ft, marla, kanal and sq yards.
-export default function PlotCalculator({ children }) {
+// Props: data (land unit data from categoryData("zameen")), children.
+export default function PlotCalculator({ data, children }) {
   const [length, setLength] = useState("25");
   const [width, setWidth] = useState("50");
   const [marlaSize, setMarlaSize] = useState(MARLA_STANDARDS.revenue);
   const id = useId();
 
-  const area = plotArea(length, width, { marlaSize });
+  const area = plotAreaWith(data, length, width, { marlaSize });
   const isEmpty = length.trim() === "" || width.trim() === "";
   const showMessage = !isEmpty && area === null;
   const marlaText = area ? formatResult(area.marla) : "";

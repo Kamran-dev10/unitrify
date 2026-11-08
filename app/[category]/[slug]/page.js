@@ -11,6 +11,7 @@ import { PAGES, POPULAR_SIZE_PAGES, getPage, getPageBySlug, pageUrl } from "@/li
 import { getCategory } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
 import { groupCrumbFor } from "@/lib/groups";
+import { categoryData } from "@/lib/category-data";
 import { faqSchema, webApplicationSchema } from "@/lib/schema";
 
 // The whole page must be static (the build fails if something makes it
@@ -79,9 +80,11 @@ export default async function ConverterPage({ params }) {
     })
     .filter(Boolean);
 
+  // Only this page's category units go to the browser.
+  const data = categoryData(page.unitCategory);
   let tool;
   if (page.tool === "plot") {
-    tool = <PlotCalculator>{content}</PlotCalculator>;
+    tool = <PlotCalculator data={data}>{content}</PlotCalculator>;
   } else if (page.tool === "plot-size") {
     tool = (
       <>
@@ -92,9 +95,9 @@ export default async function ConverterPage({ params }) {
   } else if (page.tool === "feet-inches") {
     tool = (
       <>
-        <FeetInchesConverter />
+        <FeetInchesConverter data={data} />
         {content}
-        <ConversionTable category={page.unitCategory} fromId={page.from} toId={page.to} />
+        <ConversionTable data={data} fromId={page.from} toId={page.to} />
       </>
     );
   } else {
@@ -102,7 +105,7 @@ export default async function ConverterPage({ params }) {
     // can follow the marla size picked in the converter.
     tool = (
       <Converter
-        category={page.unitCategory}
+        data={data}
         defaultFrom={page.from}
         defaultTo={page.to}
         defaultValue={page.defaultValue}

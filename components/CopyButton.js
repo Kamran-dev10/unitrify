@@ -29,7 +29,7 @@ export default function CopyButton({ text, label = "result" }) {
         disabled={!text}
         aria-label={copied ? `Copied ${label}` : `Copy ${label}`}
         // Fixed width so "Copy" → "Copied" does not move anything.
-        className="h-11 w-24 shrink-0 rounded-control border border-line bg-surface text-sm font-medium text-ink transition-colors hover:border-ink disabled:opacity-50"
+        className="h-11 w-24 shrink-0 rounded-control border border-field bg-surface text-sm font-medium text-ink transition-colors hover:border-ink disabled:opacity-50"
       >
         {copied ? "Copied" : "Copy"}
       </button>

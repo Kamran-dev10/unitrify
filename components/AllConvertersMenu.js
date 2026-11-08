@@ -82,7 +82,7 @@ export default function AllConvertersMenu({ groups }) {
         aria-expanded={open}
         aria-controls={panelId}
         aria-haspopup="dialog"
-        className="flex h-11 shrink-0 items-center gap-2 rounded-control border border-line bg-surface px-3 text-sm font-medium text-ink transition-colors hover:border-ink"
+        className="flex h-11 shrink-0 items-center gap-2 rounded-control border border-field bg-surface px-3 text-sm font-medium text-ink transition-colors hover:border-ink"
       >
         <svg aria-hidden="true" viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
           <path d="M3 5h14M3 10h14M3 15h14" />
@@ -113,7 +113,7 @@ export default function AllConvertersMenu({ groups }) {
                 type="button"
                 onClick={() => close()}
                 aria-label="Close menu"
-                className="flex h-11 w-11 items-center justify-center rounded-control border border-line text-xl text-muted transition-colors hover:border-ink hover:text-ink"
+                className="flex h-11 w-11 items-center justify-center rounded-control border border-field text-xl text-muted transition-colors hover:border-ink hover:text-ink"
               >
                 <span aria-hidden="true">×</span>
               </button>

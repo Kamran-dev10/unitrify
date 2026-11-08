@@ -5,7 +5,7 @@ import { convertBase, baseName } from "@/lib/number-base";
 import ResultBox from "@/components/ResultBox";
 
 const fieldClass =
-  "mt-2 h-12 w-full rounded-control border border-line bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
+  "mt-2 h-12 w-full rounded-control border border-field bg-surface px-4 text-base outline-none transition-colors focus:border-accent";
 const BASES = Array.from({ length: 35 }, (_, i) => i + 2);
 
 function BaseSelect({ id, label, value, onChange }) {
@@ -47,7 +47,7 @@ export default function NumberBaseConverter({ defaultValue = "255", defaultFrom 
         onChange={(e) => setValue(e.target.value)}
         aria-invalid={result.error ? true : undefined}
         aria-describedby={result.error ? `${id}-message` : undefined}
-        className="mt-2 h-16 w-full rounded-control border border-line bg-surface px-4 font-mono text-2xl outline-none transition-colors focus:border-accent"
+        className="mt-2 h-16 w-full rounded-control border border-field bg-surface px-4 font-mono text-2xl outline-none transition-colors focus:border-accent"
       />
       <div className="mt-5 flex items-end gap-3">
         <BaseSelect id={`${id}-from`} label="From" value={from} onChange={setFrom} />
@@ -60,7 +60,7 @@ export default function NumberBaseConverter({ defaultValue = "255", defaultFrom 
           }}
           aria-label="Swap bases"
           title="Swap bases"
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-control border border-line bg-surface text-xl text-muted transition-colors hover:border-ink hover:text-ink"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-control border border-field bg-surface text-xl text-muted transition-colors hover:border-ink hover:text-ink"
         >
           ⇄
         </button>

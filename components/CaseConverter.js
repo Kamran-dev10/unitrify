@@ -32,7 +32,7 @@ export default function CaseConverter() {
         }}
         rows={8}
         spellCheck={false}
-        className="mt-2 w-full resize-y rounded-control border border-line bg-surface px-4 py-3 text-base leading-relaxed outline-none transition-colors focus:border-accent"
+        className="mt-2 w-full resize-y rounded-control border border-field bg-surface px-4 py-3 text-base leading-relaxed outline-none transition-colors focus:border-accent"
       />
 
       <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Change case">
@@ -45,7 +45,7 @@ export default function CaseConverter() {
             className={`h-11 rounded-control border px-4 text-sm transition-colors ${
               active === c.id
                 ? "border-accent bg-accent-tint font-medium text-accent"
-                : "border-line bg-surface text-ink hover:border-ink"
+                : "border-field bg-surface text-ink hover:border-ink"
             }`}
           >
             {c.label}
@@ -81,7 +81,7 @@ export default function CaseConverter() {
               setActive("");
             }}
             disabled={!text}
-            className="h-11 w-24 rounded-control border border-line bg-surface text-sm font-medium text-ink transition-colors hover:border-ink disabled:opacity-50"
+            className="h-11 w-24 rounded-control border border-field bg-surface text-sm font-medium text-ink transition-colors hover:border-ink disabled:opacity-50"
           >
             Clear
           </button>
