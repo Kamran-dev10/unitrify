@@ -71,7 +71,7 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 - Dynamic routes use `ensureStatic = "navigation"` + `instant = false` (real 404s, fully prerendered).
 - Keyword rule: primary in title or h1, once in the description; 2-4 secondary; primary unique. Titles < 60 (`buildTitle`), descriptions 110-155, unique.
 - Related rule: same category first, then same group, then `"/<category>"`; never an unrelated category.
-- Tests (`tests/`): engine, convert, common, pages, seo, descriptions, schema, tools, groups, one file per new unit batch. Audit scripts (sitemap, links, a11y, JS size, duplicates) were run ad hoc, not in the repo.
+- Tests: `npm test` (Vitest, `tests/*.test.js`; `reference.test.js` is an independent NIST table for every unit). `npm run test:e2e` builds and runs Playwright (`tests/e2e/*.e2e.js`, desktop 1280px + phone 375px). Open findings and decisions: `REVIEW.md`.
 - Client components never import the unit registry: pages pass `categoryData(id)` (`lib/category-data.js`) and components use `lib/engine.js`.
 - SEO: every sitemap page has `keywords` (primary unique site-wide); `lib/site-urls.js` lists all pages for the sitemap with real dates (`updated` ?? `added`; set `updated` when content changes). Non-production hosts get `X-Robots-Tag: noindex` (next.config.mjs). Verification codes and IndexNow come from env (see .env.example); `npm run indexnow` after a deploy.
 - Known: 404 pages render their content on the client (Next.js shell).

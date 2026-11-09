@@ -1,0 +1,172 @@
+import { test, expect } from "@playwright/test";
+
+// The page must never be wider than the screen (no sideways scrolling).
+async function expectNoHorizontalScroll(page) {
+  const { scrollWidth, innerWidth } = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    innerWidth: window.innerWidth,
+  }));
+  expect(scrollWidth, "page is wider than the screen").toBeLessThanOrEqual(innerWidth + 1);
+}
+
+// Console errors, except Vercel Analytics, whose script only exists on Vercel.
+function watchErrors(page) {
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
+  page.on("console", (m) => {
+    if (m.type() !== "error") return;
+    const where = m.location()?.url ?? "";
+    if (/_vercel\/(insights|speed-insights)/.test(where + m.text())) return;
+    errors.push(`console: ${m.text()}`);
+  });
+  return errors;
+}
+
+const result = (page) => page.locator(".select-all").first();
+
+// Open a page and wait until it is interactive (React has hydrated).
+async function open(page, path) {
+  await page.goto(path);
+  await page.waitForLoadState("networkidle");
+}
+
+test("homepage loads", async ({ page }) => {
+  const errors = watchErrors(page);
+  await open(page, "/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Every measurement, one place.");
+  await expect(page.getByRole("heading", { name: "Popular" })).toBeVisible();
+  await expectNoHorizontalScroll(page);
+  expect(errors).toEqual([]);
+});
+
+test("All converters menu: opens, keeps Tab inside, Esc closes", async ({ page }) => {
+  await open(page, "/length");
+  const button = page.getByRole("banner").getByRole("button", { name: "All converters" });
+  await button.click();
+  const dialog = page.getByRole("dialog", { name: "All converters" });
+  await expect(dialog).toBeVisible();
+  await expectNoHorizontalScroll(page);
+
+  const focusInside = () => dialog.evaluate((d) => d.contains(document.activeElement));
+  expect(await focusInside()).toBe(true);
+  await page.keyboard.press("Shift+Tab"); // from the first item it must wrap to the last
+  expect(await focusInside()).toBe(true);
+  for (let i = 0; i < 5; i++) {
+    await page.keyboard.press("Tab");
+    expect(await focusInside()).toBe(true);
+  }
+
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(button).toBeFocused();
+});
+
+test("search: psi shows results and Enter opens the page", async ({ page }) => {
+  await open(page, "/");
+  const box = page.getByRole("banner").getByRole("combobox");
+  await box.click();
+  await box.fill("psi");
+  const options = page.getByRole("banner").getByRole("option");
+  await expect(options.first()).toBeVisible();
+  await box.press("Enter");
+  await expect(page).not.toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});
+
+test("converter: 10 cm = 3.937 in, swap works, text shows a message", async ({ page }) => {
+  const errors = watchErrors(page);
+  await open(page, "/length/cm-to-inch");
+  const input = page.getByLabel("Enter value");
+  await input.fill("10");
+  await expect(result(page)).toHaveText("3.937");
+
+  await page.getByRole("button", { name: "Swap units" }).click();
+  await expect(page.getByLabel("From")).toHaveValue("inch");
+  await expect(result(page)).toHaveText("25.4");
+
+  await input.fill("abc");
+  await expect(page.getByText("Please enter a number, like 5 or 2.5.")).toBeVisible();
+  await expectNoHorizontalScroll(page);
+  expect(errors).toEqual([]);
+});
+
+test("marla standard picker changes the result", async ({ page }) => {
+  await open(page, "/zameen/marla-to-sq-ft");
+  await page.getByLabel("Enter value").fill("1");
+  await expect(result(page)).toHaveText("272.25");
+  await page.getByRole("button", { name: "250 sq ft" }).click();
+  await expect(result(page)).toHaveText("250");
+  await page.getByRole("button", { name: "225 sq ft" }).click();
+  await expect(result(page)).toHaveText("225");
+  await expectNoHorizontalScroll(page);
+});
+
+test("case converter: UPPERCASE", async ({ page }) => {
+  await open(page, "/case-converter");
+  const text = page.getByRole("textbox").first();
+  await text.fill("hello world");
+  await page.getByRole("button", { name: "UPPERCASE" }).click();
+  await expect(text).toHaveValue("HELLO WORLD");
+  await expectNoHorizontalScroll(page);
+});
+
+test("number converter: 255 -> ff", async ({ page }) => {
+  await open(page, "/number-converter");
+  // The page also has a Roman numeral tool, so look only inside the number converter.
+  const tool = page.locator("section", { has: page.getByLabel("Number", { exact: true }) }).first();
+  await tool.getByLabel("Number", { exact: true }).fill("255");
+  await tool.getByLabel("From").selectOption("10");
+  await tool.getByLabel("To").selectOption("16");
+  await expect(tool.locator(".select-all").first()).toHaveText(/^ff$/i);
+  await expectNoHorizontalScroll(page);
+});
+
+test("download time: 1 GB at 100 Mbps = 1 min 20 s", async ({ page }) => {
+  await open(page, "/data-transfer");
+  await page.getByLabel("File size").fill("1");
+  await page.getByLabel("Speed").fill("100");
+  const box = page.locator("section", { has: page.getByLabel("File size") }).last();
+  await expect(box.getByText("1 min 20 s")).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});
+
+test("currency: shows a rate, the update time and the attribution link", async ({ page }) => {
+  await open(page, "/currency-converter/usd-to-pkr");
+  await expect(page.getByText(/1 USD = [\d,.]+ PKR/).first()).toBeVisible();
+  await expect(page.getByText(/Rates updated/).first()).toBeVisible();
+  const link = page.getByRole("link", { name: "Rates By Exchange Rate API" }).first();
+  await expect(link).toHaveAttribute("href", "https://www.exchangerate-api.com");
+  await expectNoHorizontalScroll(page);
+});
+
+// 30 sitemap pages, picked with a fixed seed so a failure can be repeated.
+test("30 sitemap pages: no console errors, no NaN/undefined/Infinity/null text", async ({ page, request }) => {
+  test.setTimeout(240_000);
+  const xml = await (await request.get("/sitemap.xml")).text();
+  const paths = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+  let seed = 20261109;
+  const rand = () => ((seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31);
+  const sample = paths
+    .map((p) => [rand(), p])
+    .sort((a, b) => a[0] - b[0])
+    .slice(0, 30)
+    .map(([, p]) => p);
+
+  const problems = [];
+  for (const path of sample) {
+    const errors = watchErrors(page);
+    const res = await page.goto(path);
+    if (res.status() !== 200) problems.push(`${path}: status ${res.status()}`);
+    await page.waitForLoadState("networkidle");
+    const text = await page.locator("body").innerText();
+    const bad = text.match(/\b(NaN|undefined|Infinity|null)\b/);
+    if (bad) problems.push(`${path}: shows "${bad[0]}"`);
+    const { scrollWidth, innerWidth } = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, innerWidth: window.innerWidth }));
+    if (scrollWidth > innerWidth + 1) problems.push(`${path}: horizontal scroll (${scrollWidth} > ${innerWidth})`);
+    for (const e of errors) problems.push(`${path}: ${e}`);
+    page.removeAllListeners("console");
+    page.removeAllListeners("pageerror");
+  }
+  expect(problems).toEqual([]);
+});

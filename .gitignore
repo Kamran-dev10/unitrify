@@ -43,3 +43,7 @@ next-env.d.ts
 
 # IndexNow key file, generated at build from INDEXNOW_KEY
 /public/*.txt
+
+# Playwright
+/test-results/
+/playwright-report/
