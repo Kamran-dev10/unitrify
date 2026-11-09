@@ -55,6 +55,8 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 - No popups, no clutter, no more than one accent colour on a screen.
 - Mobile first: big touch targets (min 44px), everything readable on a phone.
 - Subtle transitions only (150ms), no flashy animations.
+- Icons: lucide-react line icons in the accent colour, one per category/tool/group (`components/ConverterIcon.js`, server only).
+- Display text uses US spelling (liter, meter); British spellings stay as aliases and keywords. Scientific numbers show as "1 × 10⁻⁶" (`prettyNumber`), copy buttons copy the plain number.
 
 # Project status
 

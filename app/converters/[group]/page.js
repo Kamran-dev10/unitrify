@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { CONVERTER_GROUPS, getGroup, ALL_CONVERTERS_PAGE } from "@/lib/groups";
 import { buildMetadata } from "@/lib/seo";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import ConverterIcon from "@/components/ConverterIcon";
+import { ArrowRight } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import { itemListSchema } from "@/lib/schema";
 
@@ -37,14 +39,18 @@ export default async function GroupPage({ params }) {
           { name: g.name, path: g.path },
         ]}
       />
-      <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{g.h1}</h1>
+      <h1 className="mt-4 flex items-center gap-3 text-3xl font-bold tracking-tight sm:text-4xl">
+        <ConverterIcon id={`group:${g.id}`} className="h-7 w-7 sm:h-8 sm:w-8" />
+        {g.h1}
+      </h1>
       <p className="mt-4 text-lg leading-relaxed text-muted">{g.intro}</p>
 
       <ul className="mt-10 grid gap-4 sm:grid-cols-2">
         {g.items.map((item) => (
           <li key={item.id} className="rounded-card border border-line bg-surface p-5 shadow-card">
             <h2 className="font-semibold">
-              <Link href={item.href} className="flex min-h-11 items-center text-ink transition-colors hover:text-accent">
+              <Link href={item.href} className="flex min-h-11 items-center gap-2 text-ink transition-colors hover:text-accent">
+                <ConverterIcon id={item.id} />
                 {item.h1}
               </Link>
             </h2>
@@ -52,8 +58,9 @@ export default async function GroupPage({ params }) {
               <ul className="mt-1 text-sm">
                 {item.popular.map((p) => (
                   <li key={p.slug}>
-                    <Link href={p.href} className="flex min-h-11 items-center text-muted transition-colors hover:text-accent">
+                    <Link href={p.href} className="group/link inline-flex min-h-8 items-center gap-1 py-1 text-ink transition-colors hover:text-accent">
                       {p.h1}
+                      <ArrowRight aria-hidden="true" className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover/link:opacity-100" />
                     </Link>
                   </li>
                 ))}

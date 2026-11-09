@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { convertWith, formatSmart, inputMessageFor, unitsFor } from "@/lib/engine";
+import { convertWith, formatSmart, inputMessageFor, prettyNumber, unitsFor } from "@/lib/engine";
 import UnitOptionPicker from "@/components/UnitOptionPicker";
 import CopyButton from "@/components/CopyButton";
 
@@ -86,13 +86,14 @@ export default function AllUnitsConverter({ data }) {
               const selected = u.id === fromId;
               return (
                 <tr key={u.id} className={`border-b border-line last:border-b-0 ${selected ? "bg-accent-tint" : ""}`}>
-                  <th scope="row" className="py-2 pr-3 pl-2 text-left font-medium">
+                  <th scope="row" className="py-1 pr-3 pl-2 text-left font-medium">
                     {u.name}
                   </th>
-                  <td className="whitespace-nowrap py-2 pr-3 text-muted">{u.symbol}</td>
-                  <td className="py-2 pr-3 font-semibold tabular-nums break-all">{text || "–"}</td>
-                  <td className="py-2 pr-2 text-right">
-                    <CopyButton text={text} label={u.name} />
+                  <td className="whitespace-nowrap py-1 pr-3 text-muted">{u.symbol}</td>
+                  <td className="py-1 pr-3 font-semibold tabular-nums break-all">{prettyNumber(text) || "–"}</td>
+                  <td className="py-1 pr-1 text-right">
+                    {/* Copies the plain number (e.g. 1e-6), not the pretty one. */}
+                    <CopyButton text={text} label={u.name} variant="icon" />
                   </td>
                 </tr>
               );

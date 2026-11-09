@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { convertWith, formatSmart, inputMessageFor, unitsFor } from "@/lib/engine";
+import { convertWith, formatSmart, inputMessageFor, prettyNumber, unitsFor } from "@/lib/engine";
 import ConversionTable from "@/components/ConversionTable";
 import UnitOptionPicker from "@/components/UnitOptionPicker";
 import ResultBox from "@/components/ResultBox";
@@ -46,7 +46,7 @@ export default function Converter({
     .filter((extraId) => extraId !== toId)
     .map((extraId) => ({
       unit: units.find((u) => u.id === extraId),
-      text: formatSmart(convertWith(data, value, fromId, extraId, options)),
+      text: prettyNumber(formatSmart(convertWith(data, value, fromId, extraId, options))),
     }))
     .filter((e) => e.unit && e.text);
 
@@ -128,7 +128,7 @@ export default function Converter({
         {option && <UnitOptionPicker option={option} value={optionValue} onChange={setOptionValue} />}
 
         <ResultBox
-          value={isEmpty ? "" : resultText}
+          value={isEmpty ? "" : prettyNumber(resultText)}
           unit={toUnit?.symbol}
           copyText={isEmpty ? "" : resultText}
           message={message}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { formatSmart } from "@/lib/engine";
+import { formatSmart, prettyNumber } from "@/lib/engine";
 import { dbSplToPa, paToDbSpl } from "@/lib/sound-pressure";
 import ResultBox from "@/components/ResultBox";
 
@@ -66,7 +66,7 @@ export default function SoundPressureConverter() {
         className={inputClass}
       />
       <ResultBox
-        value={isEmpty ? "" : text}
+        value={isEmpty ? "" : prettyNumber(text)}
         unit={mode.unit}
         copyText={isEmpty ? "" : text}
         message={message}

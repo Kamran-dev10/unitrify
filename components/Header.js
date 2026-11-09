@@ -17,7 +17,8 @@ export default function Header() {
           {SITE_NAME}
         </Link>
         <AllConvertersMenu groups={menuGroups()} />
-        <div className="min-w-0 flex-1 sm:ml-auto sm:max-w-xs">
+        {/* Hidden on the homepage, which has its own big search box (globals.css). */}
+        <div data-header-search className="min-w-0 flex-1 sm:ml-auto sm:max-w-xs">
           <SearchBox placeholder="Search" />
         </div>
       </div>

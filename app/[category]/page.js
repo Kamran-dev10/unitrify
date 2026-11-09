@@ -7,6 +7,7 @@ import { groupCrumbFor, getGroup } from "@/lib/groups";
 import { categoryData } from "@/lib/category-data";
 import { faqSchema, webApplicationSchema } from "@/lib/schema";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import ConverterIcon from "@/components/ConverterIcon";
 import PageCards from "@/components/PageCards";
 import Converter from "@/components/Converter";
 import AllUnitsConverter from "@/components/AllUnitsConverter";
@@ -74,7 +75,10 @@ export default async function CategoryPage({ params }) {
           { name: c.name, path: `/${c.id}` },
         ].filter(Boolean)}
       />
-      <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{c.h1}</h1>
+      <h1 className="mt-4 flex items-center gap-3 text-3xl font-bold tracking-tight sm:text-4xl">
+        <ConverterIcon id={c.id} className="h-7 w-7 sm:h-8 sm:w-8" />
+        {c.h1}
+      </h1>
       {c.note && <p className="mt-3 text-sm leading-relaxed text-muted">{c.note}</p>}
 
       <div className="mt-8">

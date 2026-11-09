@@ -1,4 +1,5 @@
 import { formatSmart, getUnits } from "@/lib/convert";
+import { prettyNumber } from "@/lib/engine";
 
 // How a unit relates to the category's base unit, as text.
 function relation(unit, base) {
@@ -39,7 +40,7 @@ export default function UnitsTable({ category }) {
                 )}
               </th>
               <td className="whitespace-nowrap px-5 py-3 text-muted">{u.symbol}</td>
-              <td className="whitespace-nowrap px-5 py-3">{relation(u, base)}</td>
+              <td className="whitespace-nowrap px-5 py-3">{prettyNumber(relation(u, base))}</td>
             </tr>
           ))}
         </tbody>

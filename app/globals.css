@@ -38,3 +38,8 @@ body {
   background: var(--color-page);
   color: var(--color-ink);
 }
+
+/* The homepage has a big search box in its hero, so the header one is hidden there. */
+body:has(main[data-page="home"]) [data-header-search] {
+  display: none;
+}

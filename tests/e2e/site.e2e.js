@@ -63,10 +63,12 @@ test("All converters menu: opens, keeps Tab inside, Esc closes", async ({ page }
 
 test("search: psi shows results and Enter opens the page", async ({ page }) => {
   await open(page, "/");
-  const box = page.getByRole("banner").getByRole("combobox");
+  // On the homepage only the big hero search is shown; the header one is hidden.
+  await expect(page.getByRole("banner").getByRole("combobox")).toBeHidden();
+  const box = page.getByRole("main").getByRole("combobox");
   await box.click();
   await box.fill("psi");
-  const options = page.getByRole("banner").getByRole("option");
+  const options = page.getByRole("main").getByRole("option");
   await expect(options.first()).toBeVisible();
   await box.press("Enter");
   await expect(page).not.toHaveURL(/\/$/);
@@ -169,4 +171,26 @@ test("30 sitemap pages: no console errors, no NaN/undefined/Infinity/null text",
     page.removeAllListeners("pageerror");
   }
   expect(problems).toEqual([]);
+});
+
+test("header search is shown on other pages", async ({ page }) => {
+  await open(page, "/length");
+  await expect(page.getByRole("banner").getByRole("combobox")).toBeVisible();
+});
+
+test("all-units table: icon copy buttons with names, scientific numbers as × 10", async ({ page }) => {
+  await open(page, "/length");
+  const copy = page.getByRole("button", { name: "Copy Light year" });
+  await expect(copy).toBeVisible();
+  // 1 m in light years is tiny, so the table shows it as "… × 10⁻¹⁶", never "1.057e-16".
+  await expect(page.getByRole("table").first().getByText(/× 10[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+/).first()).toBeVisible();
+  await expect(page.locator("main")).not.toContainText(/\de-\d/);
+  await expectNoHorizontalScroll(page);
+});
+
+test("group pages and the all converters list do not overflow", async ({ page }) => {
+  for (const path of ["/converters", "/converters/land", "/converters/electricity", "/zameen"]) {
+    await open(page, path);
+    await expectNoHorizontalScroll(page);
+  }
 });
