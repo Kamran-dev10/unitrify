@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { readPrefill } from "@/lib/url-prefill";
 import { convertWith, formatSmart, inputMessageFor, prettyNumber, unitsFor } from "@/lib/engine";
 import ConversionTable from "@/components/ConversionTable";
 import UnitOptionPicker from "@/components/UnitOptionPicker";
@@ -32,6 +33,19 @@ export default function Converter({
   const [value, setValue] = useState(String(defaultValue));
   const [fromId, setFromId] = useState(defaultFrom);
   const [toId, setToId] = useState(defaultTo);
+
+  // Links from the search box carry ?v=100&from=cm&to=m: fill them in once
+  // the page has loaded (the HTML itself stays the same static page).
+  useEffect(() => {
+    const ids = new Set(data.units.map((u) => u.id));
+    const p = readPrefill((unitId) => ids.has(unitId));
+    /* eslint-disable react-hooks/set-state-in-effect -- one-time read of the address bar after hydration */
+    if (p.value !== null) setValue(p.value);
+    if (p.from) setFromId(p.from);
+    if (p.to) setToId(p.to);
+    /* eslint-enable react-hooks/set-state-in-effect */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // The category setting, if any: marla size (land) or base font size (typography).
   const option = data.option;
   const [optionValue, setOptionValue] = useState(option?.defaultValue);

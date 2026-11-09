@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { readPrefill } from "@/lib/url-prefill";
 import { convertCurrency, formatMoney } from "@/lib/currency";
 import ResultBox from "@/components/ResultBox";
 
@@ -14,6 +15,15 @@ export default function CurrencyConverter({ rates, currencies, defaultFrom = "US
   const [amount, setAmount] = useState(String(defaultAmount));
   const [from, setFrom] = useState(defaultFrom);
   const [to, setTo] = useState(defaultTo);
+
+  // Links from the search box carry ?v=100&from=USD&to=PKR: fill them in after load.
+  useEffect(() => {
+    const p = readPrefill((code) => Boolean(rates?.[code]));
+    if (p.value !== null) setAmount(p.value);
+    if (p.from) setFrom(p.from);
+    if (p.to) setTo(p.to);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const id = useId();
 
   const result = convertCurrency(amount, from, to, rates);

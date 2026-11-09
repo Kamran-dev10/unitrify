@@ -69,6 +69,7 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 - Tools: `lib/tools.js` (case, number, currency + pair pages); logic in `lib/text-case.js`, `number-base.js`, `roman.js`, `currency.js`, `download-time.js`, `sound-pressure.js`.
 - Groups: `lib/groups.js` (names, page text, items, `groupCrumbFor`, `menuGroups`) → `/converters` (HTML sitemap) and `/converters/<group>`, header menu, homepage, footer, breadcrumbs (Home › Group › Category › Page).
 - Header: `AllConvertersMenu` (desktop columns, phone full-screen accordion; Esc, focus trap). Search loads `/search-index.json` (route handler, prerendered) on first focus; matching in `lib/search-match.js`.
+- Smart search: `lib/search/parseQuery.js` (pure parser: numbers, feet-inches, units, currencies, typos, Roman Urdu fillers) + `lib/search/answers.js` (answers via `lib/engine.js`). Data: `/search-units.json` (built from the registry) and `/api/rates` (our cached rates). Answer links add `?v=&from=&to=`, read by `Converter`/`CurrencyConverter` after load (`lib/url-prefill.js`).
 - Currency: `lib/currency-rates.js` fetches open.er-api.com in `"use cache"` once per 24 h; runtime failure keeps last good page; build failure shows a message, retries hourly. Never hand-write rates; `RatesAttribution` on every rates page.
 - Dynamic routes use `ensureStatic = "navigation"` + `instant = false` (real 404s, fully prerendered).
 - Keyword rule: primary in title or h1, once in the description; 2-4 secondary; primary unique. Titles < 60 (`buildTitle`), descriptions 110-155, unique.

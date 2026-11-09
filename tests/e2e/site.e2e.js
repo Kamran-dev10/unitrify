@@ -194,3 +194,55 @@ test("group pages and the all converters list do not overflow", async ({ page })
     await expectNoHorizontalScroll(page);
   }
 });
+
+// ------------------------------------------------------ search answers
+
+async function ask(page, query) {
+  const box = page.getByRole("banner").getByRole("combobox");
+  await box.click();
+  await box.fill(query);
+  return box;
+}
+
+test('search answers "100 cm" and Enter opens the converter with the value filled in', async ({ page }) => {
+  await open(page, "/length");
+  const box = await ask(page, "100 cm");
+  const answer = page.getByRole("region", { name: "Answer" });
+  await expect(answer.getByRole("link", { name: "100 cm = 1 m" })).toBeVisible();
+  await expectNoHorizontalScroll(page);
+  await box.press("Enter");
+  await expect(page).toHaveURL(/\/length\?v=100&from=cm&to=m$/);
+  await page.waitForLoadState("networkidle");
+  await expect(page.getByLabel("Enter value")).toHaveValue("100");
+  await expect(page.getByLabel("From")).toHaveValue("cm");
+  await expect(page.getByLabel("To")).toHaveValue("m");
+  await expect(page.locator(".select-all").first()).toHaveText("1");
+  // The canonical link stays the clean page URL.
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/length$/);
+});
+
+test('search answers "100 pkr" with rates, the update date and the attribution link', async ({ page }) => {
+  await open(page, "/length");
+  await ask(page, "100 pkr");
+  const answer = page.getByRole("region", { name: "Answer" });
+  await expect(answer.getByRole("link", { name: /^100\.00 PKR = [\d,.]+ USD$/ })).toBeVisible();
+  await expect(answer.getByText(/Rates updated:/)).toBeVisible();
+  await expect(answer.getByRole("link", { name: "Rates By Exchange Rate API" })).toHaveAttribute("href", "https://www.exchangerate-api.com");
+});
+
+test('search answers "100 dollar to pkr" and Enter opens the currency page with 100 filled in', async ({ page }) => {
+  await open(page, "/length");
+  const box = await ask(page, "100 dollar to pkr");
+  const answer = page.getByRole("region", { name: "Answer" });
+  await expect(answer.getByRole("link", { name: /^100\.00 USD = [\d,.]+ PKR$/ })).toBeVisible();
+  await box.press("Enter");
+  await expect(page).toHaveURL(/\/currency-converter\/usd-to-pkr\?v=100$/);
+  await page.waitForLoadState("networkidle");
+  await expect(page.getByLabel(/Amount/)).toHaveValue("100");
+});
+
+test("search shows a helpful message when it cannot read the query", async ({ page }) => {
+  await open(page, "/length");
+  await ask(page, "qwzx");
+  await expect(page.getByText("We couldn’t read that.", { exact: false })).toBeVisible();
+});
