@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseQuery } from "../lib/search/parseQuery.js";
-import { buildAnswers } from "../lib/search/answers.js";
+import { buildAnswers, formatCurrencyAnswer } from "../lib/search/answers.js";
 import { buildSearchUnits } from "../lib/search/units-data.js";
 
 const data = buildSearchUnits();
@@ -21,8 +21,14 @@ describe("parseQuery: numbers and units", () => {
     const { parsed, answers } = ask("100 cm");
     expect(parsed).toMatchObject({ type: "unit", value: 100, category: "length" });
     expect(parsed.from.id).toBe("cm");
-    expect(answers.lines[0].text).toBe("100 cm = 1 m");
+    expect(answers.main.text).toBe("100 cm = 1 m");
     expect(answers.lines.length).toBeGreaterThanOrEqual(4);
+    // Rows: unit name on the left, 4 significant figures on the right, at most 5.
+    expect(answers.rows.find((r) => r.label === "Inches").valueText).toBe("39.37 in");
+    expect(answers.rows.find((r) => r.label === "Feet").valueText).toBe("3.281 ft");
+    expect(answers.rows.length).toBeLessThanOrEqual(5);
+    // cm is not ambiguous: no "Did you mean" (typography also has a centimeter).
+    expect(answers.didYouMean).toEqual([]);
     expect(answers.links.at(-1)).toEqual({ label: "Length Converter", href: "/length" });
   });
 
@@ -91,8 +97,23 @@ describe("parseQuery: currency", () => {
     const { parsed, answers } = ask("100 pkr");
     expect(parsed).toMatchObject({ type: "currency", from: "PKR", to: null });
     expect(answers.lines.map((l) => l.text.split(" ").at(-1))).toEqual(["USD", "GBP", "EUR", "AED", "SAR"]);
-    expect(answers.lines[0].text).toMatch(/^100\.00 PKR = 0\.357\d* USD$/);
+    // The amount as typed ("100", not "100.00"); below 1: 4 significant digits.
+    expect(answers.main.text).toBe("100 PKR = 0.3571 USD");
+    // 1 and above: 2 decimals (100 PKR = 1.3116 AED -> 1.31).
+    expect(answers.rows.find((r) => r.valueText.endsWith("AED")).valueText).toBe("1.31 AED");
     expect(answers.rates.updated).toBeTruthy();
+  });
+
+  it("currency rounding rule", () => {
+    expect(formatCurrencyAnswer(1.3333)).toBe("1.33");
+    expect(formatCurrencyAnswer(28000)).toBe("28,000.00");
+    expect(formatCurrencyAnswer(0.361349)).toBe("0.3613");
+    expect(formatCurrencyAnswer(0.000123456)).toBe("0.0001235");
+  });
+
+  it("echoes the amount as typed: 1,000 and 2.5", () => {
+    expect(ask("1,000 usd to pkr").answers.main.text).toBe("1,000 USD = 280,000.00 PKR");
+    expect(ask("2.5 usd to pkr").answers.main.text).toBe("2.5 USD = 700.00 PKR");
   });
 
   it('"100 dollar to pkr" -> one answer, 28,000 PKR', () => {

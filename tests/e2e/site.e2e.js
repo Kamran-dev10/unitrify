@@ -207,7 +207,7 @@ async function ask(page, query) {
 test('search answers "100 cm" and Enter opens the converter with the value filled in', async ({ page }) => {
   await open(page, "/length");
   const box = await ask(page, "100 cm");
-  const answer = page.getByRole("region", { name: "Answer" });
+  const answer = page.getByRole("listbox", { name: "Answers and pages" });
   await expect(answer.getByRole("link", { name: "100 cm = 1 m" })).toBeVisible();
   await expectNoHorizontalScroll(page);
   await box.press("Enter");
@@ -224,8 +224,8 @@ test('search answers "100 cm" and Enter opens the converter with the value fille
 test('search answers "100 pkr" with rates, the update date and the attribution link', async ({ page }) => {
   await open(page, "/length");
   await ask(page, "100 pkr");
-  const answer = page.getByRole("region", { name: "Answer" });
-  await expect(answer.getByRole("link", { name: /^100\.00 PKR = [\d,.]+ USD$/ })).toBeVisible();
+  const answer = page.getByRole("listbox", { name: "Answers and pages" });
+  await expect(answer.getByRole("link", { name: /^100 PKR = [\d,.]+ USD$/ })).toBeVisible();
   await expect(answer.getByText(/Rates updated:/)).toBeVisible();
   await expect(answer.getByRole("link", { name: "Rates By Exchange Rate API" })).toHaveAttribute("href", "https://www.exchangerate-api.com");
 });
@@ -233,8 +233,8 @@ test('search answers "100 pkr" with rates, the update date and the attribution l
 test('search answers "100 dollar to pkr" and Enter opens the currency page with 100 filled in', async ({ page }) => {
   await open(page, "/length");
   const box = await ask(page, "100 dollar to pkr");
-  const answer = page.getByRole("region", { name: "Answer" });
-  await expect(answer.getByRole("link", { name: /^100\.00 USD = [\d,.]+ PKR$/ })).toBeVisible();
+  const answer = page.getByRole("listbox", { name: "Answers and pages" });
+  await expect(answer.getByRole("link", { name: /^100 USD = [\d,.]+ PKR$/ })).toBeVisible();
   await box.press("Enter");
   await expect(page).toHaveURL(/\/currency-converter\/usd-to-pkr\?v=100$/);
   await page.waitForLoadState("networkidle");
@@ -245,4 +245,28 @@ test("search shows a helpful message when it cannot read the query", async ({ pa
   await open(page, "/length");
   await ask(page, "qwzx");
   await expect(page.getByText("We couldn’t read that.", { exact: false })).toBeVisible();
+});
+
+test("search keyboard: arrows move through the answer and its rows, Enter opens the row", async ({ page }) => {
+  await open(page, "/length");
+  const box = await ask(page, "100 cm");
+  const list = page.getByRole("listbox", { name: "Answers and pages" });
+  await expect(list.getByRole("option").first()).toContainText("100 cm = 1 m");
+  await expect(list.getByText("Did you mean")).toHaveCount(0); // cm is not ambiguous
+  await box.press("ArrowDown"); // main answer
+  await expect(list.getByRole("option").nth(0)).toHaveAttribute("aria-selected", "true");
+  await box.press("ArrowDown"); // first row
+  const row = list.getByRole("option").nth(1);
+  await expect(row).toHaveAttribute("aria-selected", "true");
+  await expectNoHorizontalScroll(page);
+  await box.press("Enter");
+  await expect(page).toHaveURL(/\/length[^?]*\?v=100/);
+});
+
+test('search "100 m" offers minute and mile', async ({ page }) => {
+  await open(page, "/length");
+  await ask(page, "100 m");
+  const list = page.getByRole("listbox", { name: "Answers and pages" });
+  await expect(list.getByRole("button", { name: "Minute" })).toBeVisible();
+  await expect(list.getByRole("button", { name: "Mile" })).toBeVisible();
 });
