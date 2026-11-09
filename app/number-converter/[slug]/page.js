@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { groupCrumbFor } from "@/lib/groups";
 import { notFound } from "next/navigation";
 import { NUMBER_PAGES, getTool } from "@/lib/tools";
@@ -61,7 +62,13 @@ export default async function NumberPairPage({ params }) {
       related={related}
     >
       <section className="mt-10">
-        <p className="text-lg leading-relaxed">{p.intro}</p>
+        <p className="text-lg leading-relaxed">
+        {p.intro} For other values, use the{" "}
+        <Link href="/number-converter" className="text-accent underline transition-colors hover:text-accent-hover">
+          {tool.h1}
+        </Link>
+        .
+      </p>
         <h2 className="mt-6 text-xl font-semibold tracking-tight">How it works</h2>
         <p className="mt-3 rounded-control border border-line bg-surface px-5 py-4 font-medium">{p.formula}</p>
       </section>

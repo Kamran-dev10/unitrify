@@ -2,6 +2,8 @@ import Link from "next/link";
 import { CONVERTER_GROUPS, ALL_CONVERTERS_PAGE } from "@/lib/groups";
 import { buildMetadata } from "@/lib/seo";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import JsonLd from "@/components/JsonLd";
+import { itemListSchema } from "@/lib/schema";
 
 export const metadata = buildMetadata(ALL_CONVERTERS_PAGE);
 
@@ -11,16 +13,21 @@ const linkClass = "transition-colors hover:text-accent";
 export default function AllConvertersPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-16">
+      <JsonLd
+        data={itemListSchema({
+          name: ALL_CONVERTERS_PAGE.h1,
+          path: ALL_CONVERTERS_PAGE.path,
+          items: CONVERTER_GROUPS.flatMap((g) => g.items.map((i) => ({ name: i.h1, path: i.href }))),
+        })}
+      />
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
           { name: "All converters", path: ALL_CONVERTERS_PAGE.path },
         ]}
       />
-      <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">All Converters</h1>
-      <p className="mt-4 text-lg leading-relaxed text-muted">
-        Every converter on the site, grouped by topic. Pick a group, a unit category or a single conversion.
-      </p>
+      <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{ALL_CONVERTERS_PAGE.h1}</h1>
+      <p className="mt-4 text-lg leading-relaxed text-muted">{ALL_CONVERTERS_PAGE.intro}</p>
 
       {CONVERTER_GROUPS.map((g) => (
         <section key={g.id} className="mt-12">

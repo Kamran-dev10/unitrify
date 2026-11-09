@@ -1,3 +1,4 @@
+import { SITE_NAME } from "@/lib/config";
 import { buildMetadata } from "@/lib/seo";
 import { SITE_PAGES } from "@/lib/site-pages";
 import SimplePage from "@/components/SimplePage";
@@ -8,9 +9,9 @@ export const metadata = buildMetadata(SITE_PAGES.contact);
 // <a href="mailto:you@example.com" className="font-medium text-accent">you@example.com</a>
 export default function ContactPage() {
   return (
-    <SimplePage title="Contact" path="/contact">
+    <SimplePage title={`Contact ${SITE_NAME}`} path="/contact">
       <p>
-        Found a mistake, or want a converter we do not have yet? We would like to hear from you.
+        Want to report a mistake or suggest a converter we do not have yet? We would like to hear from you.
       </p>
       <p>
         Email: <span className="font-medium">[MY EMAIL]</span>

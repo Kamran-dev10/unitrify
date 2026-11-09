@@ -1,24 +1,8 @@
-import { PAGES, pageUrl } from "@/lib/pages";
-import { CATEGORIES } from "@/lib/categories";
-import { TOOLS, TOOL_PAGES, toolPageUrl } from "@/lib/tools";
+import { siteEntries } from "@/lib/site-urls";
 import { absoluteUrl } from "@/lib/schema";
-import { CONVERTER_GROUPS, ALL_CONVERTERS_PAGE } from "@/lib/groups";
 
-// BUILD_DATE is set in next.config.mjs when the site is built.
-const lastModified = process.env.BUILD_DATE;
-
+// One entry per indexable page. lastModified is the page's real "updated"
+// date (or the day it was added), so it does not change on every deploy.
 export default function sitemap() {
-  const paths = [
-    "/",
-    ALL_CONVERTERS_PAGE.path,
-    ...CONVERTER_GROUPS.map((g) => g.path),
-    ...CATEGORIES.map((c) => `/${c.id}`),
-    ...PAGES.map(pageUrl),
-    ...TOOLS.map((t) => `/${t.id}`),
-    ...TOOL_PAGES.map(toolPageUrl),
-    "/about",
-    "/contact",
-    "/privacy-policy",
-  ];
-  return paths.map((path) => ({ url: absoluteUrl(path), lastModified }));
+  return siteEntries().map((e) => ({ url: absoluteUrl(e.path), lastModified: e.lastModified }));
 }

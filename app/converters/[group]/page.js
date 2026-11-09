@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { CONVERTER_GROUPS, getGroup, ALL_CONVERTERS_PAGE } from "@/lib/groups";
 import { buildMetadata } from "@/lib/seo";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import JsonLd from "@/components/JsonLd";
+import { itemListSchema } from "@/lib/schema";
 
 // Same setup as app/[category]/page.js: fully prerendered, real 404s.
 export const ensureStatic = "navigation";
@@ -27,6 +29,7 @@ export default async function GroupPage({ params }) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-16">
+      <JsonLd data={itemListSchema({ name: g.h1, path: g.path, items: g.items.map((i) => ({ name: i.h1, path: i.href })) })} />
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },

@@ -64,7 +64,7 @@ export default function Home() {
       <section>
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Every measurement, one place.</h1>
         <p className="mt-4 text-lg text-muted">
-          {SITE_NAME} is a free converter for units from around the world: length, weight, temperature,
+          {SITE_NAME} is a free unit converter for measurements from around the world: length, weight, temperature,
           currency, engineering, science and more, with Pakistani land units built in.
         </p>
         <div className="mt-8">

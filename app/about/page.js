@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <SimplePage title={`About ${SITE_NAME}`} path="/about">
       <p>
-        {SITE_NAME} is a free unit converter for the whole world. It covers more than 80 kinds of units:
+        {SITE_NAME} is a free unit converter for the whole world. It covers 76 unit categories:
         everyday ones like length, weight, temperature, area, volume and currency, and specialist ones for
         engineering, heat, electricity, magnetism, fluids, light and radiation. You can browse them all on
         the <Link href="/converters" className="text-accent underline">all converters</Link> page.

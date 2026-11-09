@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { groupCrumbFor } from "@/lib/groups";
 import { notFound } from "next/navigation";
 import { CURRENCY_PAGES, getTool } from "@/lib/tools";
@@ -78,7 +79,13 @@ export default async function CurrencyPairPage({ params }) {
       }
       related={related}
     >
-      <p className="mt-10 text-lg leading-relaxed">{p.intro}</p>
+      <p className="mt-10 text-lg leading-relaxed">
+        {p.intro} For other values, use the{" "}
+        <Link href="/currency-converter" className="text-accent underline transition-colors hover:text-accent-hover">
+          {tool.h1}
+        </Link>
+        .
+      </p>
 
       {rates && (
         <section className="mt-12">

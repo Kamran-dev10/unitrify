@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import Converter from "@/components/Converter";
 import ConversionTable from "@/components/ConversionTable";
@@ -45,12 +46,24 @@ export async function generateMetadata({ params }) {
 }
 
 
+// The first paragraph ends with a link to the category page.
 function IntroAndFormula({ page }) {
-  if (!page.intro && !page.formula && !page.note) return null;
+  const category = getCategory(page.category);
   return (
     <section className="mt-10">
-      {page.note && <p className="mb-6 text-sm leading-relaxed text-muted">{page.note}</p>}
-      {page.intro && <p className="text-lg leading-relaxed">{page.intro}</p>}
+      <p className="text-lg leading-relaxed">
+        {page.intro}
+        {category && (
+          <>
+            For other units, use the{" "}
+          <Link href={`/${category.id}`} className="text-accent underline transition-colors hover:text-accent-hover">
+            {category.h1}
+          </Link>
+          .
+          </>
+        )}
+      </p>
+      {page.note && <p className="mt-6 text-sm leading-relaxed text-muted">{page.note}</p>}
       {page.formula && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold tracking-tight">Formula</h2>

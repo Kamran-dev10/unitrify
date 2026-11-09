@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
-import { CATEGORIES, getCategory } from "@/lib/categories";
+import Link from "next/link";
+import { CATEGORIES, getCategory, categoryHeadings } from "@/lib/categories";
 import { PAGES, POPULAR_SIZE_PAGES } from "@/lib/pages";
 import { buildMetadata } from "@/lib/seo";
-import { groupCrumbFor } from "@/lib/groups";
+import { groupCrumbFor, getGroup } from "@/lib/groups";
 import { categoryData } from "@/lib/category-data";
-import { faqSchema } from "@/lib/schema";
+import { faqSchema, webApplicationSchema } from "@/lib/schema";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import PageCards from "@/components/PageCards";
 import Converter from "@/components/Converter";
@@ -53,9 +54,18 @@ export default async function CategoryPage({ params }) {
   const extra = EXTRA_TOOLS[c.id];
   // Only this category's units go to the browser.
   const data = categoryData(c.id);
+  const h = categoryHeadings(c);
+  // Two links in the intro: the most popular pair pages, topped up with
+  // other categories of the same group when there are fewer than two.
+  const group = getGroup(c.group);
+  const popular = (group?.items.find((i) => i.id === c.id)?.popular ?? []).map((p) => ({ href: p.href, text: p.h1 }));
+  const siblings = (group?.items ?? []).filter((i) => i.id !== c.id).map((i) => ({ href: i.href, text: i.h1 }));
+  const introLinks = [...popular, ...siblings].slice(0, 2);
+  const introLabel = introLinks.length === 2 && popular.length >= 2 ? "Popular conversions:" : "See also:";
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-16">
+      <JsonLd data={webApplicationSchema({ name: c.title, path: `/${c.id}` })} />
       {faqs.length > 0 && <JsonLd data={faqSchema(faqs)} />}
       <Breadcrumbs
         items={[
@@ -72,7 +82,7 @@ export default async function CategoryPage({ params }) {
       </div>
 
       <section className="mt-12">
-        <h2 className="text-xl font-semibold tracking-tight">Convert to all units</h2>
+        <h2 className="text-xl font-semibold tracking-tight">{h.allUnits}</h2>
         <div className="mt-4">
           <AllUnitsConverter data={data} />
         </div>
@@ -87,16 +97,32 @@ export default async function CategoryPage({ params }) {
         </section>
       )}
 
-      <p className="mt-12 text-lg leading-relaxed">{c.intro}</p>
+      <p className="mt-12 text-lg leading-relaxed">
+        {c.intro}
+        {introLinks.length === 2 && (
+          <>
+            {" "}
+            {introLabel}{" "}
+            <Link href={introLinks[0].href} className="text-accent underline transition-colors hover:text-accent-hover">
+              {introLinks[0].text}
+            </Link>{" "}
+            and{" "}
+            <Link href={introLinks[1].href} className="text-accent underline transition-colors hover:text-accent-hover">
+              {introLinks[1].text}
+            </Link>
+            .
+          </>
+        )}
+      </p>
 
       <section className="mt-12">
-        <h2 className="text-xl font-semibold tracking-tight">Units in this category</h2>
+        <h2 className="text-xl font-semibold tracking-tight">{h.units}</h2>
         <UnitsTable category={c} />
       </section>
 
       {pairPages.length > 0 && (
         <section className="mt-12">
-          <h2 className="text-xl font-semibold tracking-tight">{c.name} converters</h2>
+          <h2 className="text-xl font-semibold tracking-tight">{h.pairs}</h2>
           <PageCards pages={pairPages} size="lg" />
         </section>
       )}

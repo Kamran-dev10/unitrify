@@ -58,7 +58,7 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 
 # Project status
 
-- Worldwide converter: 80+ unit categories in 10 groups + tools; Pakistani land (`/zameen`) stays a strong category.
+- Worldwide converter: 76 unit categories in 10 groups + tools; Pakistani land (`/zameen`) stays a strong category.
 - `lib/categories/`: one file per category + `index.js` registry (`GROUPS`); `helpers.js` builds units. Kinds: `linear`, `affine`, `inverse` (0 → null).
 - Category extras: `buildUnits(options)` + `hasMarlaStandard` (land) or `option` (typography base font, shown by `UnitOptionPicker`); `note` (radiology disclaimer); `searchAliases`.
 - `lib/convert.js`: engine (`convert`, `formatSmart`); `lib/units.js` legacy wrapper; `"area"` falls back to `zameen`.
@@ -73,4 +73,5 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 - Related rule: same category first, then same group, then `"/<category>"`; never an unrelated category.
 - Tests (`tests/`): engine, convert, common, pages, seo, descriptions, schema, tools, groups, one file per new unit batch. Audit scripts (sitemap, links, a11y, JS size, duplicates) were run ad hoc, not in the repo.
 - Client components never import the unit registry: pages pass `categoryData(id)` (`lib/category-data.js`) and components use `lib/engine.js`.
+- SEO: every sitemap page has `keywords` (primary unique site-wide); `lib/site-urls.js` lists all pages for the sitemap with real dates (`updated` ?? `added`; set `updated` when content changes). Non-production hosts get `X-Robots-Tag: noindex` (next.config.mjs). Verification codes and IndexNow come from env (see .env.example); `npm run indexnow` after a deploy.
 - Known: 404 pages render their content on the client (Next.js shell).
