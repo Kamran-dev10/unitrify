@@ -147,8 +147,6 @@ are deprecated, or belong to a different quantity:
 
 ## Placeholders I must fill
 
-- `app/contact/page.js`: `[MY EMAIL]` is shown on the page, and the TODO comment
-  above it explains how to make it a mailto link.
 - `app/privacy-policy/page.js`: the `[REVIEW]` line is shown on the page. The policy
   is marked as a draft to be reviewed before launch; remove the line after review.
 - Vercel environment variables (see `.env.example`):

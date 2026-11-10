@@ -178,6 +178,19 @@ test("header search is shown on other pages", async ({ page }) => {
   await expect(page.getByRole("banner").getByRole("combobox")).toBeVisible();
 });
 
+test("site name, Unit Converter label and the contact email link", async ({ page }) => {
+  await open(page, "/contact");
+  const logo = page.getByRole("banner").getByRole("link").first();
+  await expect(logo).toContainText("Unitrify");
+  // The label shows when there is room; narrow phones hide it.
+  const wide = (page.viewportSize()?.width ?? 0) >= 480;
+  await expect(logo.getByText("Unit Converter")).toBeVisible({ visible: wide });
+  await expect(page.getByRole("link", { name: "info@unitrify.com" })).toHaveAttribute("href", "mailto:info@unitrify.com");
+  await expect(page.locator("main")).not.toContainText("[MY EMAIL]");
+  await expect(page).toHaveTitle(/ \| Unitrify$|^Contact Unitrify/);
+  await expectNoHorizontalScroll(page);
+});
+
 test("all-units table: icon copy buttons with names, scientific numbers as × 10", async ({ page }) => {
   await open(page, "/length");
   const copy = page.getByRole("button", { name: "Copy Light year" });

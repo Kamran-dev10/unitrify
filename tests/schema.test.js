@@ -8,7 +8,7 @@ import {
   serializeJsonLd,
 } from "../lib/schema.js";
 import { PAGES, pageUrl } from "../lib/pages.js";
-import { SITE_NAME, SITE_URL } from "../lib/config.js";
+import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from "../lib/config.js";
 
 // Every block must survive the trip to HTML and back, and have @context + @type.
 function checkBlock(data) {
@@ -23,6 +23,7 @@ describe("JSON-LD", () => {
     const org = checkBlock(organizationSchema());
     expect(org["@type"]).toBe("Organization");
     expect(org.name).toBe(SITE_NAME);
+    expect(org.email).toBe(CONTACT_EMAIL);
     expect(org.url).toBe(SITE_URL);
     expect(org.logo.startsWith(SITE_URL)).toBe(true);
 

@@ -1,3 +1,8 @@
+# Unitrify
+
+Unitrify (unitrify.com) is a free unit converter: Pakistani land units plus 76 worldwide unit categories.
+The site name and contact email live in `lib/config.js` (`SITE_NAME`, `CONTACT_EMAIL`).
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

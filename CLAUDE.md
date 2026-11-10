@@ -2,7 +2,7 @@
 
 # Project
 
-A unit converter website. Main focus: Pakistani land units (marla, kanal,
+Unitrify (unitrify.com), a unit converter website. Main focus: Pakistani land units (marla, kanal,
 acre, murabba), plus common conversions (length, weight, temperature, area,
 volume).
 
@@ -20,7 +20,8 @@ volume).
 - Never change a conversion factor without telling the user the old and new value.
 - Every unit has a country tag: `"global"` or a country code such as `"pk"`.
 - Every page must be statically generated (good for SEO).
-- Site name comes only from `SITE_NAME` in `lib/config.js`. Never hardcode it.
+- Site name comes only from `SITE_NAME` in `lib/config.js` ("Unitrify"), the email only
+  from `CONTACT_EMAIL` (info@unitrify.com). Never hardcode either.
 - All website text is in English only. No Urdu or Roman Urdu text anywhere
   on the site. Local unit names (marla, kanal, murabba, tola, maund) stay as
   they are.
