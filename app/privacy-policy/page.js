@@ -15,7 +15,6 @@ export default function PrivacyPolicyPage() {
       intro="What we collect when you use this site, and what we do with it."
       path="/privacy-policy"
     >
-      <p className="rounded-control border border-line bg-page px-5 py-3 font-semibold">[REVIEW]</p>
       <p className="text-muted">Last updated: November 2026</p>
 
       <p>
