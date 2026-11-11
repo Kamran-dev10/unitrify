@@ -34,7 +34,7 @@ test("homepage loads", async ({ page }) => {
   const errors = watchErrors(page);
   await open(page, "/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Every measurement, one place.");
-  await expect(page.getByRole("heading", { name: "Popular" })).toBeVisible();
+  await expect(page.getByRole("main").getByRole("heading", { name: "Popular" })).toBeVisible();
   await expectNoHorizontalScroll(page);
   expect(errors).toEqual([]);
 });
@@ -185,7 +185,7 @@ test("site name, Unit Converter label and the contact email link", async ({ page
   // The label shows when there is room; narrow phones hide it.
   const wide = (page.viewportSize()?.width ?? 0) >= 480;
   await expect(logo.getByText("Unit Converter")).toBeVisible({ visible: wide });
-  await expect(page.getByRole("link", { name: "info@unitrify.com" })).toHaveAttribute("href", "mailto:info@unitrify.com");
+  await expect(page.getByRole("main").getByRole("link", { name: "info@unitrify.com" })).toHaveAttribute("href", "mailto:info@unitrify.com");
   await expect(page.locator("main")).not.toContainText("[MY EMAIL]");
   await expect(page).toHaveTitle(/ \| Unitrify$|^Contact Unitrify/);
   await expectNoHorizontalScroll(page);
@@ -309,4 +309,56 @@ test('search "100 m" offers minute and mile', async ({ page }) => {
   const list = page.getByRole("listbox", { name: "Answers and pages" });
   await expect(list.getByRole("button", { name: "Minute" })).toBeVisible();
   await expect(list.getByRole("button", { name: "Mile" })).toBeVisible();
+});
+
+// ------------------------------------------------------ footer, simple pages, contact form
+
+test("footer: brand, three link columns and the bottom bar", async ({ page }) => {
+  await open(page, "/length");
+  const footer = page.getByRole("contentinfo");
+  await expect(footer.getByText("Every measurement, one place.")).toBeVisible();
+  await expect(footer.getByRole("link", { name: "info@unitrify.com" })).toHaveAttribute("href", "mailto:info@unitrify.com");
+  for (const heading of ["Converters", "Popular", "Company"]) await expect(footer.getByRole("heading", { name: heading })).toBeVisible();
+  await expect(footer.getByRole("link", { name: "kg to lbs" })).toHaveAttribute("href", "/weight/kg-to-lbs");
+  await expect(footer.getByRole("link", { name: "USD to PKR" })).toHaveAttribute("href", "/currency-converter/usd-to-pkr");
+  await expect(footer.getByRole("link", { name: "How we verify" })).toBeVisible();
+  await expect(footer.getByText(/© \d{4} Unitrify/)).toBeVisible();
+  await expect(footer.getByText("Factors verified against NIST SP 811")).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});
+
+test("simple pages share one layout and do not overflow", async ({ page }) => {
+  for (const path of ["/about", "/how-we-verify", "/contact", "/privacy-policy"]) {
+    await open(page, path);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    // Section headings carry an icon.
+    expect(await page.locator("main h2 svg").count(), path).toBeGreaterThan(0);
+    await expectNoHorizontalScroll(page);
+  }
+});
+
+test("contact form: shows validation messages for empty and bad input", async ({ page }) => {
+  await open(page, "/contact");
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.getByText("Please enter your name.")).toBeVisible();
+  await expect(page.getByText("Please enter your email address.")).toBeVisible();
+  await expect(page.getByText("Please choose a topic.")).toBeVisible();
+  await expect(page.getByText("Please write a message.")).toBeVisible();
+  await page.getByLabel("Email").fill("ali@");
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.getByText(/valid email address/)).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});
+
+test("contact form: sends (mocked sender) and shows success", async ({ page }) => {
+  await open(page, "/contact");
+  await page.getByLabel("Name").fill("Test Person");
+  await page.getByLabel("Email").fill("test@example.com");
+  await page.getByLabel("Topic").selectOption("Suggest a converter");
+  await page.getByLabel("Message").fill("Please add a bigha converter.");
+  await page.waitForTimeout(3100); // the server rejects messages sent within 3 seconds of loading
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.getByText("Thank you, your message has been sent.")).toBeVisible();
+  await expect(page.getByRole("main").getByText("Or email us directly:")).toBeVisible();
+  await expectNoHorizontalScroll(page);
 });

@@ -37,6 +37,7 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 | Token          | Value     | Use                          |
 | -------------- | --------- | ---------------------------- |
 | `page`         | `#FAFAF7` | Page background (warm off-white) |
+| `subtle`       | `#F4F3EF` | Footer background (light tint) |
 | `surface`      | `#FFFFFF` | Cards                        |
 | `line`         | `#E7E5E0` | 1px card / divider borders   |
 | `field`        | `#8C8882` | Input, select, button outlines (3:1+) |
@@ -79,4 +80,5 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 - Client components never import the unit registry: pages pass `categoryData(id)` (`lib/category-data.js`) and components use `lib/engine.js`.
 - SEO: every sitemap page has `keywords` (primary unique site-wide); `lib/site-urls.js` lists all pages for the sitemap with real dates (`updated` ?? `added`; set `updated` when content changes). Non-production hosts get `X-Robots-Tag: noindex` (next.config.mjs). Verification codes and IndexNow come from env (see .env.example); `npm run indexnow` after a deploy.
 - Known: 404 pages render their content on the client (Next.js shell).
+- Simple pages (About, How we verify, Contact, Privacy) use `SimplePage` (h1 + intro + card) and `SimpleSection` (lucide icon headings). Contact form: `components/ContactForm.js` + `lib/contact.js` (shared rules) + `app/api/contact/route.js` (nodemailer, env SMTP_* and CONTACT_TO; honeypot, 3 s minimum, 5 per 10 min per IP; `CONTACT_FAKE_SEND=1` in e2e only).
 - Trust: `/how-we-verify` (counts read from the registry); `SourceLine` ends every category and pair page (date = `lastModifiedOf`, also WebApplication `dateModified`); optional `extra: { heading, text }` section on pair pages and groups; `LandUnitsDiagram` on /zameen.

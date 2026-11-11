@@ -4,6 +4,7 @@
    border-line, bg-accent, hover:bg-accent-hover, bg-accent-tint. */
 @theme {
   --color-page: #fafaf7;
+  --color-subtle: #f4f3ef; /* footer background: muted text still 4.7:1 */
   --color-surface: #ffffff;
   --color-line: #e7e5e0;
   --color-field: #8c8882; /* form field outlines: 3.5:1 on white (WCAG 1.4.11) */

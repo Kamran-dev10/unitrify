@@ -4,7 +4,8 @@ import { buildMetadata } from "@/lib/seo";
 import { SITE_PAGES } from "@/lib/site-pages";
 import { UNIT_CATEGORIES, getCategoryUnits } from "@/lib/categories/index";
 import { PAGES } from "@/lib/pages";
-import SimplePage from "@/components/SimplePage";
+import SimplePage, { SimpleSection } from "@/components/SimplePage";
+import { Ruler, Table2, ListChecks, Info, Mail } from "lucide-react";
 
 export const metadata = buildMetadata(SITE_PAGES.howWeVerify);
 
@@ -17,7 +18,11 @@ const fmt = (n) => n.toLocaleString("en-US");
 
 export default function HowWeVerifyPage() {
   return (
-    <SimplePage title="How We Verify Conversions" path="/how-we-verify">
+    <SimplePage
+      title="How We Verify Conversions"
+      intro="Where our numbers come from, and how every one of them is checked."
+      path="/how-we-verify"
+    >
       <p>
         A converter is only useful if you can trust the answer. This page explains, in plain English, where{" "}
         {SITE_NAME}’s numbers come from and how we check them. Today the site has {fmt(unitCount)} units in{" "}
@@ -26,7 +31,7 @@ export default function HowWeVerifyPage() {
         goes through the checks below.
       </p>
 
-      <h2>1. Exact definitions first</h2>
+      <SimpleSection icon={Ruler} title="1. Exact definitions first">
       <p>
         Every unit is defined by how much it is in one base unit, for example 1 inch = 0.0254 meter. Where a unit
         has an exact legal or SI definition, we use that exact number, never a rounded one: the inch, foot, pound and
@@ -39,16 +44,18 @@ export default function HowWeVerifyPage() {
         All factors are kept in one place in our code, one file per category, so a correction made once is used on
         every page, table and search answer.
       </p>
+      </SimpleSection>
 
-      <h2>2. An independent reference table</h2>
+      <SimpleSection icon={Table2} title="2. An independent reference table">
       <p>
         We keep a second, independent reference table, written straight from NIST SP 811 and the SI definitions and
         not copied from the converter’s own data. An automated test compares the two for every unit; they must agree
         to within one part in a million. If someone changes a factor by mistake, this test fails before the change
         can go live.
       </p>
+      </SimpleSection>
 
-      <h2>3. Automated tests on every page</h2>
+      <SimpleSection icon={ListChecks} title="3. Automated tests on every page">
       <ul>
         <li>Every unit: the engine’s result is checked against the independent reference table.</li>
         <li>Every pair page: the quick answer and any number in the title must equal what the converter calculates.</li>
@@ -60,16 +67,18 @@ export default function HowWeVerifyPage() {
         These tests run every time the site is updated, together with browser tests on desktop and phone screens
         that check the converters work and no page shows a broken number.
       </p>
+      </SimpleSection>
 
-      <h2>4. What we do not verify</h2>
+      <SimpleSection icon={Info} title="4. What we do not verify">
       <p>
         Currency rates are not fixed factors: they come from a public rates service once a day, and the source and
         update time are shown next to them. Local units with more than one size, such as the marla, are shown with
         the standard used. For buying land, legal or medical matters, always confirm figures with official
         documents.
       </p>
+      </SimpleSection>
 
-      <h2>Found a mistake?</h2>
+      <SimpleSection icon={Mail} title="Found a mistake?">
       <p>
         Please tell us. Email{" "}
         <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-accent underline">
@@ -78,6 +87,7 @@ export default function HowWeVerifyPage() {
         with the page address, the value you entered and the result you expected. We check every report against the
         official definition, and if we were wrong we fix the factor and add a test so it cannot happen again.
       </p>
+      </SimpleSection>
     </SimplePage>
   );
 }

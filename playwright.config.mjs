@@ -19,6 +19,8 @@ export default defineConfig({
     command: `npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: false,
+    // The contact form runs fully but does not send a real email.
+    env: { CONTACT_FAKE_SEND: "1" },
     timeout: 120_000,
   },
 });
