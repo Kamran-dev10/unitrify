@@ -8,6 +8,9 @@ import PlotSizeAnswer from "@/components/PlotSizeAnswer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import JsonLd from "@/components/JsonLd";
 import PageCards from "@/components/PageCards";
+import SourceLine from "@/components/SourceLine";
+import ExtraSection from "@/components/ExtraSection";
+import { lastModifiedOf } from "@/lib/site-urls";
 import { PAGES, POPULAR_SIZE_PAGES, getPage, getPageBySlug, pageUrl } from "@/lib/pages";
 import { getCategory } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
@@ -133,7 +136,7 @@ export default async function ConverterPage({ params }) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-16">
-      <JsonLd data={webApplicationSchema({ name: page.title, path: pageUrl(page) })} />
+      <JsonLd data={webApplicationSchema({ name: page.title, path: pageUrl(page), dateModified: lastModifiedOf(page) })} />
       {faqs.length > 0 && <JsonLd data={faqSchema(faqs)} />}
 
       <Breadcrumbs
@@ -162,6 +165,8 @@ export default async function ConverterPage({ params }) {
         </section>
       )}
 
+      {page.extra && <ExtraSection extra={page.extra} />}
+
       {page.showPopularSizes && (
         <section className="mt-12">
           <h2 className="text-xl font-semibold tracking-tight">Popular plot sizes</h2>
@@ -189,6 +194,8 @@ export default async function ConverterPage({ params }) {
           <PageCards pages={related} columns={3} />
         </section>
       )}
+
+      <SourceLine date={lastModifiedOf(page)} />
     </main>
   );
 }

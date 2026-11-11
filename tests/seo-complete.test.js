@@ -19,6 +19,7 @@ const SITE_H1 = {
   "/about": `About ${SITE_NAME}`,
   "/contact": `Contact ${SITE_NAME}`,
   "/privacy-policy": "Privacy Policy",
+  "/how-we-verify": "How We Verify Conversions",
 };
 
 describe("no [VERIFY] marks", () => {
@@ -83,7 +84,7 @@ describe("keywords on every sitemap page", () => {
       check(g.path, [g.intro, `About ${g.name} units`, about].join(" "), g.keywords.secondary);
     }
     check(ALL_CONVERTERS_PAGE.path, ALL_CONVERTERS_PAGE.intro, ALL_CONVERTERS_PAGE.keywords.secondary);
-    const source = { "/": "app/page.js", "/about": "app/about/page.js", "/contact": "app/contact/page.js", "/privacy-policy": "app/privacy-policy/page.js" };
+    const source = { "/": "app/page.js", "/about": "app/about/page.js", "/contact": "app/contact/page.js", "/privacy-policy": "app/privacy-policy/page.js", "/how-we-verify": "app/how-we-verify/page.js" };
     for (const p of Object.values(SITE_PAGES)) check(p.path, readFileSync(join(ROOT, source[p.path]), "utf8"), p.keywords.secondary);
   });
 
@@ -107,7 +108,7 @@ describe("sitemap", () => {
   // /converters lists every category, tool and pair page, the menu and logo
   // link to the rest.
   it("no page is an orphan", () => {
-    const linked = new Set(["/", "/about", "/contact", "/privacy-policy", ALL_CONVERTERS_PAGE.path]);
+    const linked = new Set(["/", "/about", "/contact", "/privacy-policy", "/how-we-verify", ALL_CONVERTERS_PAGE.path]);
     for (const g of CONVERTER_GROUPS) {
       linked.add(g.path);
       for (const i of g.items) {

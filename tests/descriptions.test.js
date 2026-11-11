@@ -15,7 +15,7 @@ const ALL = [
 
 describe("meta descriptions", () => {
   it("covers every page", () => {
-    expect(ALL.length).toBe(4 + CATEGORIES.length + PAGES.length + 1 + CONVERTER_GROUPS.length);
+    expect(ALL.length).toBe(Object.keys(SITE_PAGES).length + CATEGORIES.length + PAGES.length + 1 + CONVERTER_GROUPS.length);
   });
 
   it("every description is 110-155 characters", () => {

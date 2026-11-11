@@ -13,6 +13,9 @@ import Converter from "@/components/Converter";
 import AllUnitsConverter from "@/components/AllUnitsConverter";
 import UnitsTable from "@/components/UnitsTable";
 import JsonLd from "@/components/JsonLd";
+import SourceLine from "@/components/SourceLine";
+import LandUnitsDiagram from "@/components/LandUnitsDiagram";
+import { lastModifiedOf } from "@/lib/site-urls";
 import DownloadTimeCalculator from "@/components/DownloadTimeCalculator";
 import SoundPressureConverter from "@/components/SoundPressureConverter";
 
@@ -66,7 +69,7 @@ export default async function CategoryPage({ params }) {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-16">
-      <JsonLd data={webApplicationSchema({ name: c.title, path: `/${c.id}` })} />
+      <JsonLd data={webApplicationSchema({ name: c.title, path: `/${c.id}`, dateModified: lastModifiedOf(c) })} />
       {faqs.length > 0 && <JsonLd data={faqSchema(faqs)} />}
       <Breadcrumbs
         items={[
@@ -133,6 +136,13 @@ export default async function CategoryPage({ params }) {
 
       {c.id === "zameen" && (
         <section className="mt-12">
+          <h2 className="text-xl font-semibold tracking-tight">How acre, kanal and marla fit together</h2>
+          <LandUnitsDiagram />
+        </section>
+      )}
+
+      {c.id === "zameen" && (
+        <section className="mt-12">
           <h2 className="text-xl font-semibold tracking-tight">Popular plot sizes</h2>
           <PageCards pages={POPULAR_SIZE_PAGES} columns={3} />
         </section>
@@ -151,6 +161,8 @@ export default async function CategoryPage({ params }) {
           </div>
         </section>
       )}
+
+      <SourceLine date={lastModifiedOf(c)} />
     </main>
   );
 }

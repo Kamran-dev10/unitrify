@@ -30,6 +30,13 @@ export default function AboutPage() {
         <li>Results are shown with up to 4 decimal places.</li>
       </ul>
       <p>
+        Read the details on{" "}
+        <Link href="/how-we-verify" className="text-accent underline">
+          how we verify these conversions
+        </Link>
+        .
+      </p>
+      <p>
         For buying, selling or legal matters, always confirm the area and the marla size in your official
         documents. Radiation and medical units are for information only.
       </p>

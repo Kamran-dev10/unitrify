@@ -79,3 +79,4 @@ Colours are defined as theme tokens in `app/globals.css`. Use the tokens
 - Client components never import the unit registry: pages pass `categoryData(id)` (`lib/category-data.js`) and components use `lib/engine.js`.
 - SEO: every sitemap page has `keywords` (primary unique site-wide); `lib/site-urls.js` lists all pages for the sitemap with real dates (`updated` ?? `added`; set `updated` when content changes). Non-production hosts get `X-Robots-Tag: noindex` (next.config.mjs). Verification codes and IndexNow come from env (see .env.example); `npm run indexnow` after a deploy.
 - Known: 404 pages render their content on the client (Next.js shell).
+- Trust: `/how-we-verify` (counts read from the registry); `SourceLine` ends every category and pair page (date = `lastModifiedOf`, also WebApplication `dateModified`); optional `extra: { heading, text }` section on pair pages and groups; `LandUnitsDiagram` on /zameen.

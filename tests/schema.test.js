@@ -8,6 +8,7 @@ import {
   serializeJsonLd,
 } from "../lib/schema.js";
 import { PAGES, pageUrl } from "../lib/pages.js";
+import { lastModifiedOf } from "../lib/site-urls.js";
 import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from "../lib/config.js";
 
 // Every block must survive the trip to HTML and back, and have @context + @type.
@@ -30,6 +31,15 @@ describe("JSON-LD", () => {
     const site = checkBlock(websiteSchema());
     expect(site["@type"]).toBe("WebSite");
     expect(site.name).toBe(SITE_NAME);
+  });
+
+  it("WebApplication carries dateModified from the page data (YYYY-MM-DD)", () => {
+    for (const p of PAGES) {
+      const date = lastModifiedOf(p);
+      expect(date, pageUrl(p)).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(checkBlock(webApplicationSchema({ name: p.title, path: pageUrl(p), dateModified: date })).dateModified).toBe(date);
+    }
+    expect(webApplicationSchema({ name: "x", path: "/x" })).not.toHaveProperty("dateModified");
   });
 
   it("every converter page has valid WebApplication, FAQ and breadcrumb data", () => {

@@ -6,6 +6,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ConverterIcon from "@/components/ConverterIcon";
 import { ArrowRight } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
+import ExtraSection from "@/components/ExtraSection";
 import { itemListSchema } from "@/lib/schema";
 
 // Same setup as app/[category]/page.js: fully prerendered, real 404s.
@@ -88,6 +89,8 @@ export default async function GroupPage({ params }) {
           ))}
         </section>
       )}
+
+      {g.extra && <ExtraSection extra={g.extra} />}
     </main>
   );
 }

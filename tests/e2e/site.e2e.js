@@ -191,6 +191,33 @@ test("site name, Unit Converter label and the contact email link", async ({ page
   await expectNoHorizontalScroll(page);
 });
 
+// Every category and pair page ends with the source line, a real date and the verify link.
+test("every converter page shows the source line", async ({ request }) => {
+  test.setTimeout(240_000);
+  const { siteEntries } = await import("../../lib/site-urls.js");
+  const { PAGES, pageUrl } = await import("../../lib/pages.js");
+  const { CATEGORIES } = await import("../../lib/categories.js");
+  const dates = new Map(siteEntries().map((e) => [e.path, e.lastModified]));
+  const paths = [...CATEGORIES.map((c) => `/${c.id}`), ...PAGES.map(pageUrl)];
+  const problems = [];
+  for (const path of paths) {
+    const html = await (await request.get(path)).text();
+    const line = html.match(/<p data-source-line[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? "";
+    if (!line.includes("Factors from NIST SP 811 and SI definitions")) problems.push(`${path}: no source line`);
+    else if (!line.toLowerCase().includes(`datetime="${dates.get(path)}"`)) problems.push(`${path}: wrong date`);
+    else if (!line.includes('href="/how-we-verify"')) problems.push(`${path}: no verify link`);
+  }
+  expect(paths.length).toBe(CATEGORIES.length + PAGES.length);
+  expect(paths.length).toBeGreaterThan(200);
+  expect(problems).toEqual([]);
+});
+
+test("/zameen has the acre, kanal and marla diagram", async ({ page }) => {
+  await open(page, "/zameen");
+  await expect(page.getByRole("img", { name: "1 acre = 8 kanal = 160 marla" })).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});
+
 test("all-units table: icon copy buttons with names, scientific numbers as × 10", async ({ page }) => {
   await open(page, "/length");
   const copy = page.getByRole("button", { name: "Copy Light year" });
