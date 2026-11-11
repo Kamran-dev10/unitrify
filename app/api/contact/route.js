@@ -16,6 +16,17 @@ function smtpConfig() {
   return { host: SMTP_HOST, port, secure: port === 465, auth: { user: SMTP_USER, pass: SMTP_PASS }, to: CONTACT_TO, from: SMTP_USER };
 }
 
+// CONTACT_FAKE_SEND is for local browser tests only. On the live Vercel
+// site (VERCEL_ENV=production) it is ignored, so real messages are never dropped.
+export function fakeSendEnabled(env = process.env) {
+  if (env.CONTACT_FAKE_SEND !== "1") return false;
+  if (env.VERCEL_ENV === "production") {
+    console.warn("Contact form: CONTACT_FAKE_SEND is set in production and is ignored. Remove it from the environment.");
+    return false;
+  }
+  return true;
+}
+
 function clientIp(request) {
   const forwarded = request.headers.get("x-forwarded-for");
   return (forwarded?.split(",")[0] || request.headers.get("x-real-ip") || "unknown").trim();
@@ -40,7 +51,7 @@ export async function POST(request) {
   if (!allow(clientIp(request))) return json({ ok: false, error: "rate-limit" }, 429);
 
   // Browser tests set CONTACT_FAKE_SEND=1: everything runs except the real email.
-  if (process.env.CONTACT_FAKE_SEND === "1") return json({ ok: true });
+  if (fakeSendEnabled()) return json({ ok: true });
 
   const smtp = smtpConfig();
   if (!smtp) return json({ ok: false, error: "not-configured" }, 503);

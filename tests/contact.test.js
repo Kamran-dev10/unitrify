@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { validateContact, spamReason, createRateLimiter, contactSubject, CONTACT_LIMITS, CONTACT_TOPICS } from "../lib/contact.js";
-import { POST } from "../app/api/contact/route.js";
+import { POST, fakeSendEnabled } from "../app/api/contact/route.js";
 
 const GOOD = { name: "Ali Khan", email: "ali@example.com", topic: "Suggest a converter", message: "Please add a bigha converter." };
 const human = { website: "", elapsedMs: 8000 };
@@ -61,7 +61,7 @@ describe("contact form spam protection", () => {
 
 describe("POST /api/contact", () => {
   const saved = {};
-  const KEYS = ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "CONTACT_TO", "CONTACT_FAKE_SEND"];
+  const KEYS = ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "CONTACT_TO", "CONTACT_FAKE_SEND", "VERCEL_ENV"];
   beforeEach(() => KEYS.forEach((k) => ((saved[k] = process.env[k]), delete process.env[k])));
   afterEach(() => KEYS.forEach((k) => (saved[k] === undefined ? delete process.env[k] : (process.env[k] = saved[k]))));
 
@@ -104,6 +104,21 @@ describe("POST /api/contact", () => {
     process.env.CONTACT_FAKE_SEND = "1";
     const res = await post({ ...GOOD, ...human });
     expect(await res.json()).toEqual({ ok: true });
+  });
+
+  it("CONTACT_FAKE_SEND is ignored (with a warning) on the live site", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(fakeSendEnabled({ CONTACT_FAKE_SEND: "1" })).toBe(true);
+    expect(fakeSendEnabled({ CONTACT_FAKE_SEND: "1", VERCEL_ENV: "preview" })).toBe(true);
+    expect(warn).not.toHaveBeenCalled();
+    expect(fakeSendEnabled({ CONTACT_FAKE_SEND: "1", VERCEL_ENV: "production" })).toBe(false);
+    expect(warn).toHaveBeenCalledOnce();
+    // Through the route: production + fake send + no SMTP -> the real path ("not-configured"), not a fake success.
+    process.env.CONTACT_FAKE_SEND = "1";
+    process.env.VERCEL_ENV = "production";
+    const res = await post({ ...GOOD, ...human });
+    expect((await res.json()).error).toBe("not-configured");
+    warn.mockRestore();
   });
 
   it("rate limit per IP: the 6th message in a row is refused", async () => {
