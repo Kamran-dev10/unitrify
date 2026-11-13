@@ -10,7 +10,9 @@ export default defineConfig({
   timeout: 60_000,
   fullyParallel: true,
   reporter: [["list"]],
-  use: { baseURL: `http://localhost:${PORT}`, browserName: "chromium" },
+  // PW_CHANNEL=chrome uses the installed Google Chrome, for PCs where Windows
+  // Smart App Control blocks Playwright's own (unsigned) Chromium.
+  use: { baseURL: `http://localhost:${PORT}`, browserName: "chromium", ...(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {}) },
   projects: [
     { name: "desktop", use: { viewport: { width: 1280, height: 800 } } },
     { name: "phone", use: { viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true } },

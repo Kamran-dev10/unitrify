@@ -127,8 +127,28 @@ describe("preview protection", () => {
     process.env.NEXT_PUBLIC_SITE_URL = "https://www.example.com";
     const rules = await nextConfig.headers();
     process.env.NEXT_PUBLIC_SITE_URL = before;
-    expect(rules).toHaveLength(1);
-    expect(rules[0].missing).toEqual([{ type: "host", value: "www\\.example\\.com" }]);
-    expect(rules[0].headers).toContainEqual({ key: "X-Robots-Tag", value: "noindex, nofollow" });
+    const noindex = rules.filter((r) => r.headers.some((h) => h.key === "X-Robots-Tag"));
+    expect(noindex).toHaveLength(1);
+    expect(noindex[0].missing).toEqual([{ type: "host", value: "www\\.example\\.com" }]);
+    expect(noindex[0].headers).toContainEqual({ key: "X-Robots-Tag", value: "noindex, nofollow" });
+  });
+});
+
+describe("security headers", () => {
+  it("every page gets the security headers and a CSP without nonces", async () => {
+    const rules = await nextConfig.headers();
+    const all = rules.find((r) => r.source === "/:path*" && !r.missing && r.headers.some((h) => h.key === "Content-Security-Policy"));
+    const get = (k) => all.headers.find((h) => h.key === k)?.value;
+    expect(get("X-Content-Type-Options")).toBe("nosniff");
+    expect(get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
+    expect(get("X-Frame-Options")).toBe("SAMEORIGIN");
+    expect(get("Cross-Origin-Opener-Policy")).toBe("same-origin");
+    expect(get("Permissions-Policy")).toBe("camera=(), microphone=(), geolocation=(), payment=(), usb=()");
+    const csp = get("Content-Security-Policy");
+    for (const d of ["default-src 'self'", "frame-ancestors 'self'", "object-src 'none'", "upgrade-insecure-requests"]) expect(csp).toContain(d);
+    expect(csp).not.toMatch(/nonce-/);
+    expect(csp).not.toContain("unsafe-eval"); // only added under `next dev`
+    // Vercel sends HSTS; we must not set it.
+    expect(all.headers.some((h) => h.key === "Strict-Transport-Security")).toBe(false);
   });
 });
