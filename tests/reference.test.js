@@ -335,7 +335,7 @@ describe("pair pages agree with the engine", () => {
     for (const p of PAGES) {
       if (p.tool === "plot" || p.tool === "plot-size") continue;
       const data = categoryData(p.unitCategory);
-      for (const n of ROWS) {
+      for (const n of [...ROWS, ...(p.tableRows ?? [])]) {
         expect(convertWith(data, n, p.from, p.to), `${p.slug} row ${n}`).toBe(convert(n, p.from, p.to, p.unitCategory));
       }
     }

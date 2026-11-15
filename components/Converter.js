@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { readPrefill } from "@/lib/url-prefill";
-import { convertWith, formatSmart, inputMessageFor, prettyNumber, unitsFor } from "@/lib/engine";
+import { convertWith, formatFeetInches, formatSmart, inputMessageFor, prettyNumber, unitsFor } from "@/lib/engine";
 import ConversionTable from "@/components/ConversionTable";
 import UnitOptionPicker from "@/components/UnitOptionPicker";
 import ResultBox from "@/components/ResultBox";
@@ -16,6 +16,9 @@ const selectClass =
 //   defaultTo    unit id, e.g. "sq-ft"
 //   defaultValue optional: starting value in the input (default "1")
 //   alsoShow     optional: extra unit ids shown in small text under the result
+//   feetInches   optional: when the answer is in feet, also show it as feet + inches
+//                ("= 5 ft 10 in"), in the result and as a table column.
+//   tableRows    optional: extra values for the table (added to the usual 1-100 rows)
 //   tableFrom / tableTo  optional: show a ConversionTable for this pair.
 //                It follows the marla size (or other category setting) picked here.
 //   children     optional: content shown between the converter and the
@@ -26,6 +29,8 @@ export default function Converter({
   defaultTo,
   defaultValue = "1",
   alsoShow = [],
+  feetInches = false,
+  tableRows = [],
   tableFrom,
   tableTo,
   children,
@@ -63,6 +68,9 @@ export default function Converter({
       text: prettyNumber(formatSmart(convertWith(data, value, fromId, extraId, options))),
     }))
     .filter((e) => e.unit && e.text);
+  // "5 ft 10 in" under a result in feet.
+  const feetInchesText =
+    feetInches && toId === "foot" ? formatFeetInches(convertWith(data, value, fromId, "inch", options)) : "";
 
   const isEmpty = value.trim() === "";
   const message =
@@ -148,7 +156,12 @@ export default function Converter({
           message={message}
           messageId={`${id}-message`}
           extra={
-            alsoShow.length > 0 && (
+            feetInches ? (
+              // Always rendered (even when empty) so the box keeps its height.
+              <div className="mt-2 min-h-6 text-base text-muted" aria-live="polite">
+                {!message && !isEmpty && feetInchesText && <p>= {feetInchesText}</p>}
+              </div>
+            ) : alsoShow.length > 0 && (
               // Always rendered (even when empty) so the box keeps its height.
               <div className="mt-2 min-h-6 text-base text-muted" aria-live="polite">
                 {!message &&
@@ -167,7 +180,14 @@ export default function Converter({
       {children}
 
       {tableFrom && tableTo && (
-        <ConversionTable data={data} fromId={tableFrom} toId={tableTo} options={options} />
+        <ConversionTable
+          data={data}
+          fromId={tableFrom}
+          toId={tableTo}
+          options={options}
+          extraRows={tableRows}
+          feetInches={feetInches && tableTo === "foot"}
+        />
       )}
     </>
   );

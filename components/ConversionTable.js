@@ -1,9 +1,12 @@
-import { convertWith, formatResult, unitsFor } from "@/lib/engine";
+import { convertWith, formatFeetInches, formatResult, unitsFor } from "@/lib/engine";
 
-const ROWS = [
+export const TABLE_ROWS = [
   ...Array.from({ length: 20 }, (_, i) => i + 1),
   25, 30, 40, 50, 75, 100,
 ];
+
+// The usual rows plus a page's own common values (e.g. 59, 66, 70 inches), sorted, no repeats.
+export const tableRowsFor = (extraRows = []) => [...new Set([...TABLE_ROWS, ...extraRows])].sort((a, b) => a - b);
 
 // Plain HTML table of common values. No hooks, so it works both on the
 // server and inside the Converter (where it follows the marla standard).
@@ -12,6 +15,8 @@ export default function ConversionTable({
   fromId,
   toId,
   options = {}, // the category setting, e.g. { marlaSize: 250 } or { baseFontPx: 16 }
+  extraRows = [], // common values to add to the usual rows
+  feetInches = false, // add a "Feet and inches" column (for answers in feet)
 }) {
   const units = unitsFor(data, options);
   const marlaSize = options.marlaSize ?? data?.option?.defaultValue;
@@ -43,10 +48,15 @@ export default function ConversionTable({
               <th scope="col" className="px-5 py-3 text-sm font-medium text-muted">
                 {to.name} ({to.symbol})
               </th>
+              {feetInches && (
+                <th scope="col" className="px-5 py-3 text-sm font-medium text-muted">
+                  Feet and inches
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
-            {ROWS.map((n) => (
+            {tableRowsFor(extraRows).map((n) => (
               <tr key={n} className="border-b border-line last:border-b-0">
                 <td className="whitespace-nowrap px-5 py-3">
                   {n} {from.symbol}
@@ -54,6 +64,11 @@ export default function ConversionTable({
                 <td className="whitespace-nowrap px-5 py-3 font-medium">
                   {formatResult(convertWith(data, n, fromId, toId, options))} {to.symbol}
                 </td>
+                {feetInches && (
+                  <td className="whitespace-nowrap px-5 py-3">
+                    {formatFeetInches(convertWith(data, n, fromId, "inch", options))}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

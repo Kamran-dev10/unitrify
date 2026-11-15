@@ -251,14 +251,15 @@ test('search answers "100 cm" and Enter opens the converter with the value fille
   await expect(answer.getByRole("link", { name: "100 cm = 1 m" })).toBeVisible();
   await expectNoHorizontalScroll(page);
   await box.press("Enter");
-  await expect(page).toHaveURL(/\/length\?v=100&from=cm&to=m$/);
+  // cm to m has its own pair page, so the answer opens it with 100 filled in.
+  await expect(page).toHaveURL(/\/length\/cm-to-m\?v=100$/);
   await page.waitForLoadState("networkidle");
   await expect(page.getByLabel("Enter value")).toHaveValue("100");
   await expect(page.getByLabel("From")).toHaveValue("cm");
   await expect(page.getByLabel("To")).toHaveValue("m");
   await expect(page.locator(".select-all").first()).toHaveText("1");
   // The canonical link stays the clean page URL.
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/length$/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/length\/cm-to-m$/);
 });
 
 test('search answers "100 pkr" with rates, the update date and the attribution link', async ({ page }) => {
@@ -361,4 +362,38 @@ test("contact form: sends (mocked sender) and shows success", async ({ page }) =
   await expect(page.getByText("Thank you, your message has been sent.")).toBeVisible();
   await expect(page.getByRole("main").getByText("Or email us directly:")).toBeVisible();
   await expectNoHorizontalScroll(page);
+});
+
+test("inches to feet: 70 in shows 5.8333 ft and 5 ft 10 in, with a feet-and-inches table column", async ({ page }) => {
+  await open(page, "/length/inches-to-feet");
+  await page.getByLabel("Enter value").fill("70");
+  await expect(result(page)).toHaveText("5.8333");
+  await expect(page.getByText("= 5 ft 10 in")).toBeVisible();
+  const table = page.getByRole("table").first();
+  await expect(table.getByRole("columnheader", { name: "Feet and inches" })).toBeVisible();
+  await expect(table.getByRole("row", { name: /66 in .* 5 ft 6 in/ })).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});
+
+test("new length pages exist with their FAQ data", async ({ page }) => {
+  for (const [path, h1] of [["/length/cm-to-m", "CM to M Converter"], ["/length/inches-to-meters", "Inches to Meters Converter"], ["/length/m-to-cm", "M to CM Converter"], ["/length/meters-to-inches", "Meters to Inches Converter"]]) {
+    await open(page, path);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(h1);
+    const ld = await page.locator('script[type="application/ld+json"]').allTextContents();
+    expect(ld.some((t) => t.includes('"FAQPage"')), path).toBe(true);
+    await expect(page.getByRole("main").getByRole("link", { name: "Length Converter" }).first()).toBeVisible();
+    await expectNoHorizontalScroll(page);
+  }
+});
+
+test("/length hub links to the new length pages, and each new pair links to its reverse", async ({ page }) => {
+  await open(page, "/length");
+  const main = page.getByRole("main");
+  for (const href of ["/length/cm-to-m", "/length/m-to-cm", "/length/inches-to-meters", "/length/meters-to-inches"]) {
+    await expect(main.locator(`a[href="${href}"]`).first(), href).toBeAttached();
+  }
+  for (const [from, to] of [["cm-to-m", "m-to-cm"], ["m-to-cm", "cm-to-m"], ["inches-to-meters", "meters-to-inches"], ["meters-to-inches", "inches-to-meters"]]) {
+    await open(page, `/length/${from}`);
+    await expect(page.getByRole("main").locator(`a[href="/length/${to}"]`).first(), `${from} -> ${to}`).toBeAttached();
+  }
 });

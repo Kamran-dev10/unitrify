@@ -126,6 +126,8 @@ export default async function ConverterPage({ params }) {
         defaultTo={page.to}
         defaultValue={page.defaultValue}
         alsoShow={page.alsoShow}
+        feetInches={page.feetInches}
+        tableRows={page.tableRows}
         tableFrom={page.from}
         tableTo={page.to}
       >

@@ -26,17 +26,18 @@ describe("quick answers", () => {
 });
 
 describe("common pair pages", () => {
-  it("there are 57 common pages, all in PAGES", () => {
-    expect(COMMON_PAGES.length).toBe(57);
+  it("there are 61 common pages, all in PAGES", () => {
+    expect(COMMON_PAGES.length).toBe(61);
     for (const p of COMMON_PAGES) expect(PAGES).toContain(p);
   });
 
-  it("every new page has a quick answer, intro, formula and 3 FAQs", () => {
+  it("every new page has a quick answer, intro, formula and 3-5 FAQs", () => {
     for (const p of COMMON_PAGES) {
       expect(p.quickAnswer, p.slug).toBeTruthy();
       expect(p.intro, p.slug).toBeTruthy();
       expect(p.formula, p.slug).toBeTruthy();
-      expect(p.faqs.length, p.slug).toBe(3);
+      expect(p.faqs.length, p.slug).toBeGreaterThanOrEqual(3);
+      expect(p.faqs.length, p.slug).toBeLessThanOrEqual(5);
     }
   });
 
@@ -68,5 +69,65 @@ describe("common pair pages", () => {
         seen.set(key, p.slug);
       }
     }
+  });
+});
+
+describe("length keyword pages", () => {
+  const get = (slug) => PAGES.find((p) => p.slug === slug);
+  // Page text the visitor sees (not the meta description).
+  const body = (p) => [p.h1, p.quickAnswer, p.intro, p.formula, ...(p.examples ?? []), ...p.faqs.flatMap((f) => [f.question, f.answer]), p.extra?.text ?? ""].join(" ").toLowerCase();
+  const count = (text, phrase) => text.split(phrase.toLowerCase()).length - 1;
+
+  it("each page exists once, keeps its URL, and has 3 worked examples and 4-5 FAQs", () => {
+    for (const [slug, primary] of [["cm-to-inch", "cm to inches"], ["cm-to-m", "cm to m"], ["inches-to-feet", "inches to feet"], ["inches-to-meters", "inches to meters"], ["m-to-cm", "m to cm"], ["meters-to-inches", "meters to inches"]]) {
+      const p = get(slug);
+      expect(p, slug).toBeTruthy();
+      expect(PAGES.filter((q) => q.unitCategory === "length" && q.from === p.from && q.to === p.to && !q.tool), slug).toHaveLength(1);
+      expect(p.category).toBe("length");
+      expect(p.keywords.primary).toBe(primary);
+      expect(p.h1.toLowerCase()).toContain(primary);
+      expect(p.examples, slug).toHaveLength(3);
+      expect(p.faqs.length, slug).toBeGreaterThanOrEqual(4);
+      expect(p.faqs.length, slug).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it("variants are used, each at most once in the page text", () => {
+    const variants = {
+      "cm-to-inch": ["cm to in ", "convert cm to inches", "how many inches in a centimeter", "1 cm to inches", "10 cm to inches", "70 cm in inches", "centimetres to inches"],
+      "cm-to-m": ["centimetre to metre", "cm to meter", "how to convert cm to m", "1 cm to m"],
+      "inches-to-feet": ["in to ft", "inch to feet converter", "1 inch to feet", "59 inches to feet", "70 inches to feet and inches", "66 inches = 5 ft 6 in"],
+      "inches-to-meters": ["inches to m ", "inch to m ", "how many inches in a meter", "1 inch in m", "inches in one meter"],
+    };
+    for (const [slug, list] of Object.entries(variants)) {
+      const text = body(get(slug));
+      for (const v of list) expect(count(text, v), `${slug}: "${v.trim()}"`).toBe(1);
+    }
+  });
+
+  it("70 inches shows as 5 ft 10 in, and the table has the common values", () => {
+    const p = get("inches-to-feet");
+    expect(p.feetInches).toBe(true);
+    expect(p.examples.join(" ")).toContain("5 ft 10 in");
+    expect(p.tableRows).toEqual(expect.arrayContaining([59, 66, 70]));
+    expect(get("cm-to-inch").tableRows).toContain(70);
+  });
+
+  it("links: the length hub, and the reverse pair where it exists", () => {
+    expect(get("cm-to-inch").related).toContain("inch-to-cm");
+    expect(get("inches-to-feet").related).toContain("feet-to-inches");
+    // Each new pair links to its reverse, both ways.
+    for (const [a, b] of [["cm-to-m", "m-to-cm"], ["inches-to-meters", "meters-to-inches"]]) {
+      expect(get(a).related, a).toContain(b);
+      expect(get(b).related, b).toContain(a);
+    }
+  });
+});
+
+describe("sitemap and hub", () => {
+  it("the new length pages are in the sitemap", async () => {
+    const { siteEntries } = await import("../lib/site-urls.js");
+    const paths = siteEntries().map((e) => e.path);
+    for (const p of ["/length/cm-to-m", "/length/m-to-cm", "/length/inches-to-meters", "/length/meters-to-inches"]) expect(paths, p).toContain(p);
   });
 });
