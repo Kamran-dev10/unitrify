@@ -99,3 +99,14 @@ describe("formatSmart", () => {
     expect(formatSmart(null)).toBe("");
   });
 });
+
+describe("compound displays", async () => {
+  const { formatPoundsOunces, formatFeetInches } = await import("../lib/engine.js");
+  const { convert } = await import("../lib/convert.js");
+  it("3.2 kg = 7 lb 0.9 oz, 70 in = 5 ft 10 in, and leftovers roll over", () => {
+    expect(formatPoundsOunces(convert(3.2, "kg", "ounce", "weight"))).toBe("7 lb 0.9 oz");
+    expect(formatFeetInches(70)).toBe("5 ft 10 in");
+    expect(formatPoundsOunces(15.98)).toBe("1 lb 0 oz");
+    expect(formatFeetInches(11.999)).toBe("1 ft 0 in");
+  });
+});

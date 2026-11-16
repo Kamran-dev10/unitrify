@@ -107,7 +107,7 @@ describe("length keyword pages", () => {
 
   it("70 inches shows as 5 ft 10 in, and the table has the common values", () => {
     const p = get("inches-to-feet");
-    expect(p.feetInches).toBe(true);
+    expect(p.compound).toBe("feet-inches");
     expect(p.examples.join(" ")).toContain("5 ft 10 in");
     expect(p.tableRows).toEqual(expect.arrayContaining([59, 66, 70]));
     expect(get("cm-to-inch").tableRows).toContain(70);
@@ -129,5 +129,74 @@ describe("sitemap and hub", () => {
     const { siteEntries } = await import("../lib/site-urls.js");
     const paths = siteEntries().map((e) => e.path);
     for (const p of ["/length/cm-to-m", "/length/m-to-cm", "/length/inches-to-meters", "/length/meters-to-inches"]) expect(paths, p).toContain(p);
+  });
+});
+
+describe("keyword round 2: land and weight pages", () => {
+  const get = (slug) => PAGES.find((p) => p.slug === slug);
+  const body = (p) =>
+    [p.h1, p.quickAnswer, p.intro, p.formula, ...(p.examples ?? []), ...p.faqs.flatMap((f) => [f.question, f.answer]), p.extra?.text ?? ""]
+      .join(" ")
+      .toLowerCase();
+  const count = (text, phrase) => text.split(phrase.toLowerCase()).length - 1;
+  const PAGES_2 = {
+    "marla-to-sq-ft": ["marla to sq ft", ["marla in sq ft", "1 marla sq ft", "how many square feet in one marla", "marla calculator", "3 marla in square feet", "5 marla in square feet", "7 marla in square feet", "8 marla in square feet", "10 marla in square feet"]],
+    "sq-ft-to-marla": ["sq ft to marla", ["square foot in marla"]],
+    "kanal-to-marla": ["kanal to marla", ["1 kanal to marla", "1 kanal in marla"]],
+    "marla-to-sq-yard": ["marla to square yards", ["5 marla in square yards"]],
+    "kg-to-lbs": ["kg to lbs", ["convert kg to pounds", "how many pounds in 1 kg", "1 kilo to pounds", "1 kg in pounds", "3 kg in pounds", "3.5 kg to pounds", "kg to lbs and oz"]],
+    "lbs-to-kg": ["lbs to kg", ["3 pounds to kg"]],
+  };
+
+  it("same URLs, primary in the h1, 3 examples and 4-5 FAQs", () => {
+    for (const [slug, [primary]] of Object.entries(PAGES_2)) {
+      const p = get(slug);
+      expect(p, slug).toBeTruthy();
+      expect(p.keywords.primary, slug).toBe(primary);
+      expect(p.h1.toLowerCase(), slug).toContain(primary);
+      expect(p.formula, slug).toBeTruthy();
+      expect(p.examples, slug).toHaveLength(3);
+      expect(p.faqs.length, slug).toBeGreaterThanOrEqual(4);
+      expect(p.faqs.length, slug).toBeLessThanOrEqual(5);
+      expect([...p.metaDescription].length, slug).toBeGreaterThanOrEqual(120);
+    }
+  });
+
+  it("each variant appears exactly once in the page text", () => {
+    for (const [slug, [, variants]] of Object.entries(PAGES_2)) {
+      const text = body(get(slug));
+      for (const v of variants) expect(count(text, v), `${slug}: "${v}"`).toBe(1);
+    }
+  });
+
+  it("marla pages: every square-feet or square-yard number for a marla names its standard", () => {
+    for (const slug of ["marla-to-sq-ft", "marla-to-sq-yard", "sq-ft-to-marla"]) {
+      const p = get(slug);
+      expect(p.tableAllChoices, slug).toBe(true);
+      for (const line of p.examples) expect(line, `${slug}: ${line}`).toMatch(/\(272\.25 sq ft marla\).*\(250\).*\(225\)/);
+    }
+    expect(get("marla-to-sq-ft").tableRowSet).toEqual([1, 2, 3, 5, 6, 7, 8, 10, 15, 20]);
+    const lw = get("marla-to-sq-ft").faqs.find((f) => /length and width/.test(f.question));
+    expect(lw.answer).toContain("25 ft × 9 ft = 225 sq ft");
+    expect(lw.answer).not.toMatch(/society|societies|DHA|Bahria/i);
+  });
+
+  it("kg to lbs: pounds and ounces, the main table and the baby weight table", () => {
+    const p = get("kg-to-lbs");
+    expect(p.compound).toBe("pounds-ounces");
+    expect(p.faqs.find((f) => f.question.includes("3.2 kg")).answer).toContain("7 lb 0.9 oz");
+    expect(p.tableRowSet).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100]);
+    const baby = p.extraTables[0].rows;
+    expect(baby[0]).toBe(2.5);
+    expect(baby.at(-1)).toBe(4.5);
+    expect(baby).toHaveLength(21);
+    expect(p.extraTables[0].compound).toBe("pounds-ounces");
+  });
+
+  it("reverse pairs are linked where they exist", () => {
+    expect(get("marla-to-sq-ft").related[0]).toBe("sq-ft-to-marla");
+    expect(get("sq-ft-to-marla").related[0]).toBe("marla-to-sq-ft");
+    expect(get("kg-to-lbs").related[0]).toBe("lbs-to-kg");
+    expect(get("lbs-to-kg").related[0]).toBe("kg-to-lbs");
   });
 });

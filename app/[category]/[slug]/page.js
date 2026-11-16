@@ -126,8 +126,10 @@ export default async function ConverterPage({ params }) {
         defaultTo={page.to}
         defaultValue={page.defaultValue}
         alsoShow={page.alsoShow}
-        feetInches={page.feetInches}
+        compound={page.compound}
         tableRows={page.tableRows}
+        tableRowSet={page.tableRowSet}
+        tableAllChoices={page.tableAllChoices}
         tableFrom={page.from}
         tableTo={page.to}
       >
@@ -166,6 +168,18 @@ export default async function ConverterPage({ params }) {
           </ul>
         </section>
       )}
+
+      {(page.extraTables ?? []).map((t) => (
+        <ConversionTable
+          key={t.title}
+          data={data}
+          fromId={page.from}
+          toId={page.to}
+          title={t.title}
+          rowSet={t.rows}
+          compound={t.compound}
+        />
+      ))}
 
       {page.extra && <ExtraSection extra={page.extra} />}
 

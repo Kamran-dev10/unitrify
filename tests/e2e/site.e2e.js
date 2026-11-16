@@ -397,3 +397,24 @@ test("/length hub links to the new length pages, and each new pair links to its 
     await expect(page.getByRole("main").locator(`a[href="/length/${to}"]`).first(), `${from} -> ${to}`).toBeAttached();
   }
 });
+
+test("marla to sq ft: one table column per marla size", async ({ page }) => {
+  await open(page, "/zameen/marla-to-sq-ft");
+  const table = page.getByRole("table").first();
+  for (const size of ["272.25", "250", "225"]) {
+    await expect(table.getByRole("columnheader", { name: `sq ft (${size} sq ft marla)` })).toBeVisible();
+  }
+  await expect(table.getByRole("row", { name: /^5 marla 1,361.25 sq ft 1,250 sq ft 1,125 sq ft$/ })).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});
+
+test("kg to lbs: 3.2 kg shows 7 lb 0.9 oz, and the baby weight table", async ({ page }) => {
+  await open(page, "/weight/kg-to-lbs");
+  await page.getByLabel("Enter value").fill("3.2");
+  await expect(page.getByText("= 7 lb 0.9 oz")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Baby weight: kg to pounds and ounces" })).toBeVisible();
+  const baby = page.getByRole("table").last();
+  await expect(baby.getByRole("columnheader", { name: "Pounds and ounces" })).toBeVisible();
+  await expect(baby.getByRole("row", { name: /^3.2 kg .* 7 lb 0.9 oz$/ })).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});

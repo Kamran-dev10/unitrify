@@ -335,8 +335,13 @@ describe("pair pages agree with the engine", () => {
     for (const p of PAGES) {
       if (p.tool === "plot" || p.tool === "plot-size") continue;
       const data = categoryData(p.unitCategory);
-      for (const n of [...ROWS, ...(p.tableRows ?? [])]) {
-        expect(convertWith(data, n, p.from, p.to), `${p.slug} row ${n}`).toBe(convert(n, p.from, p.to, p.unitCategory));
+      const rows = [...ROWS, ...(p.tableRows ?? []), ...(p.tableRowSet ?? []), ...(p.extraTables ?? []).flatMap((t) => t.rows)];
+      // Tables with one column per marla size: check every size.
+      const choices = p.tableAllChoices && data.option ? data.option.choices.map((c) => ({ [data.option.key]: c })) : [{}];
+      for (const n of rows) {
+        for (const opts of choices) {
+          expect(convertWith(data, n, p.from, p.to, opts), `${p.slug} row ${n} ${JSON.stringify(opts)}`).toBe(convert(n, p.from, p.to, p.unitCategory, opts));
+        }
       }
     }
   });

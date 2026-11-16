@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { readPrefill } from "@/lib/url-prefill";
-import { convertWith, formatFeetInches, formatSmart, inputMessageFor, prettyNumber, unitsFor } from "@/lib/engine";
+import { COMPOUNDS, compoundText, convertWith, formatSmart, inputMessageFor, prettyNumber, unitsFor } from "@/lib/engine";
 import ConversionTable from "@/components/ConversionTable";
 import UnitOptionPicker from "@/components/UnitOptionPicker";
 import ResultBox from "@/components/ResultBox";
@@ -16,9 +16,12 @@ const selectClass =
 //   defaultTo    unit id, e.g. "sq-ft"
 //   defaultValue optional: starting value in the input (default "1")
 //   alsoShow     optional: extra unit ids shown in small text under the result
-//   feetInches   optional: when the answer is in feet, also show it as feet + inches
-//                ("= 5 ft 10 in"), in the result and as a table column.
+//   compound     optional: "feet-inches" or "pounds-ounces". When the answer is in
+//                feet (or pounds), also show it as "= 5 ft 10 in" / "= 7 lb 0.9 oz",
+//                under the result and as a table column.
 //   tableRows    optional: extra values for the table (added to the usual 1-100 rows)
+//   tableRowSet  optional: the table's full list of values (replaces the usual rows)
+//   tableAllChoices optional: one table column per category setting (e.g. every marla size)
 //   tableFrom / tableTo  optional: show a ConversionTable for this pair.
 //                It follows the marla size (or other category setting) picked here.
 //   children     optional: content shown between the converter and the
@@ -29,8 +32,10 @@ export default function Converter({
   defaultTo,
   defaultValue = "1",
   alsoShow = [],
-  feetInches = false,
+  compound,
   tableRows = [],
+  tableRowSet,
+  tableAllChoices = false,
   tableFrom,
   tableTo,
   children,
@@ -68,9 +73,9 @@ export default function Converter({
       text: prettyNumber(formatSmart(convertWith(data, value, fromId, extraId, options))),
     }))
     .filter((e) => e.unit && e.text);
-  // "5 ft 10 in" under a result in feet.
-  const feetInchesText =
-    feetInches && toId === "foot" ? formatFeetInches(convertWith(data, value, fromId, "inch", options)) : "";
+  // "5 ft 10 in" under a result in feet, "7 lb 0.9 oz" under a result in pounds.
+  const compoundShown = compound && COMPOUNDS[compound]?.big === toId;
+  const compoundLine = compoundShown ? compoundText(data, value, fromId, compound, options) : "";
 
   const isEmpty = value.trim() === "";
   const message =
@@ -156,10 +161,10 @@ export default function Converter({
           message={message}
           messageId={`${id}-message`}
           extra={
-            feetInches ? (
+            compound ? (
               // Always rendered (even when empty) so the box keeps its height.
               <div className="mt-2 min-h-6 text-base text-muted" aria-live="polite">
-                {!message && !isEmpty && feetInchesText && <p>= {feetInchesText}</p>}
+                {!message && !isEmpty && compoundLine && <p>= {compoundLine}</p>}
               </div>
             ) : alsoShow.length > 0 && (
               // Always rendered (even when empty) so the box keeps its height.
@@ -186,7 +191,9 @@ export default function Converter({
           toId={tableTo}
           options={options}
           extraRows={tableRows}
-          feetInches={feetInches && tableTo === "foot"}
+          rowSet={tableRowSet}
+          allChoices={tableAllChoices}
+          compound={compound && COMPOUNDS[compound]?.big === tableTo ? compound : undefined}
         />
       )}
     </>
