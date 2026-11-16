@@ -418,3 +418,17 @@ test("kg to lbs: 3.2 kg shows 7 lb 0.9 oz, and the baby weight table", async ({ 
   await expect(baby.getByRole("row", { name: /^3.2 kg .* 7 lb 0.9 oz$/ })).toBeVisible();
   await expectNoHorizontalScroll(page);
 });
+
+test("/zameen hub lists the new land pages, and each links to its reverse", async ({ page }) => {
+  await open(page, "/zameen");
+  for (const href of ["/zameen/marla-to-kanal", "/zameen/sq-yard-to-marla"]) {
+    await expect(page.getByRole("main").locator(`a[href="${href}"]`).first(), href).toBeAttached();
+  }
+  for (const [from, to] of [["marla-to-kanal", "kanal-to-marla"], ["kanal-to-marla", "marla-to-kanal"], ["sq-yard-to-marla", "marla-to-sq-yard"], ["marla-to-sq-yard", "sq-yard-to-marla"]]) {
+    await open(page, `/zameen/${from}`);
+    await expect(page.getByRole("main").locator(`a[href="/zameen/${to}"]`).first(), `${from} -> ${to}`).toBeAttached();
+  }
+  await open(page, "/zameen/sq-yard-to-marla");
+  await expect(page.getByRole("table").first().getByRole("columnheader", { name: "marla (225 sq ft marla)" })).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});

@@ -200,3 +200,36 @@ describe("keyword round 2: land and weight pages", () => {
     expect(get("lbs-to-kg").related[0]).toBe("kg-to-lbs");
   });
 });
+
+describe("new land pages: marla to kanal, square yards to marla", () => {
+  const get = (slug) => PAGES.find((p) => p.slug === slug);
+
+  it("structure, unique primaries and links both ways", () => {
+    for (const [slug, primary, reverse] of [["marla-to-kanal", "marla to kanal", "kanal-to-marla"], ["sq-yard-to-marla", "square yards to marla", "marla-to-sq-yard"]]) {
+      const p = get(slug);
+      expect(p.category).toBe("zameen");
+      expect(p.keywords.primary).toBe(primary);
+      expect(PAGES.filter((q) => q.keywords.primary === primary)).toHaveLength(1);
+      expect(p.h1.toLowerCase()).toContain(primary);
+      expect(p.examples).toHaveLength(3);
+      expect(p.faqs.length).toBeGreaterThanOrEqual(4);
+      expect(p.related[0]).toBe(reverse);
+      expect(get(reverse).related[0]).toBe(slug);
+    }
+  });
+
+  it("square yards to marla names every standard; gaz to marla appears once", () => {
+    const p = get("sq-yard-to-marla");
+    expect(p.tableAllChoices).toBe(true);
+    for (const line of p.examples) expect(line).toMatch(/\(272\.25 sq ft marla\).*\(250\).*\(225\)/);
+    const text = [p.intro, ...p.examples, ...p.faqs.flatMap((f) => [f.question, f.answer])].join(" ").toLowerCase();
+    expect(text.split("gaz to marla").length - 1).toBe(1);
+  });
+
+  it("both are in the sitemap", async () => {
+    const { siteEntries } = await import("../lib/site-urls.js");
+    const paths = siteEntries().map((e) => e.path);
+    expect(paths).toContain("/zameen/marla-to-kanal");
+    expect(paths).toContain("/zameen/sq-yard-to-marla");
+  });
+});
