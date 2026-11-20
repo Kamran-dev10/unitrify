@@ -123,21 +123,20 @@ are deprecated, or belong to a different quantity:
 
 ## Needs my decision
 
-1. **Maund:** the site uses 1 maund = 40 kg, Pakistan's metric maund. NIST has no
-   definition. The old British-India maund is 40 seer × 80 tola = 37.3242 kg. Keep 40 kg?
-2. **Kilocalorie per hour (power category):** it uses the thermochemical calorie,
-   1 kcal/h = 1.1622 W. The heat categories (thermal conductivity, heat flux, heat
-   transfer coefficient) label their kcal/h units "Kilocalorie (IT)" and use 1.163 W.
-   Both are valid NIST values. To be consistent, the power unit could become
-   "Kilocalorie (IT) per hour" (old 1.16222 W → new 1.163 W). It was not changed.
-3. **Spelling:** "litre" appears in 22 text fields (volume, fuel consumption,
-   `/volume/litre-to-gallon`) and "liter" in 51 (newer categories). "meter" is used
-   everywhere and "metre" never. Pick one spelling for litre/liter. URLs would stay
-   the same.
-4. **Title style:** older pair titles start with upper-case abbreviations ("KG to LBS",
-   "CM to Inches", "ML to Cup", "MM to CM"). This is consistent, but strictly ML and MM
-   mean megalitre and megameter. The answer part of each title uses the correct
-   symbols. Keep the headline style, or switch to lower-case symbols or full words?
+Decided on 2026-11-20:
+
+1. **Maund:** kept at 40 kg (Pakistan's metric maund). The page FAQ notes that the
+   British-India maund was 82 2/7 lb (about 37.32 kg).
+2. **Kilocalorie per hour (power):** switched to the International Table calorie,
+   "Kilocalorie (IT) per hour". Old factor 4,184/3,600 = 1.16222 W, new factor
+   4,186.8/3,600 = 1.163 W exactly (NIST SP 811), matching the heat categories.
+   The reference test was updated.
+3. **Spelling:** "liter" in all visible text; the URL `/volume/litre-to-gallon` and
+   the British spellings in aliases and keywords stay.
+4. **Title style:** kept as it is.
+
+Still open:
+
 5. **Contact page** is very short (one sentence and the email).
 6. **404 pages** render their content in the browser, which is how Next.js handles
    these 404s. Search works there.
@@ -147,8 +146,8 @@ are deprecated, or belong to a different quantity:
 
 ## Placeholders I must fill
 
-- `app/privacy-policy/page.js`: the `[REVIEW]` line is shown on the page. The policy
-  is marked as a draft to be reviewed before launch; remove the line after review.
+- Privacy policy: the `[REVIEW]` line is gone. The policy covers Vercel Web Analytics
+  (no cookies), the contact form, ExchangeRate-API and future Google AdSense cookies.
 - Vercel environment variables (see `.env.example`):
   - `NEXT_PUBLIC_SITE_URL` is required. Without it every page is noindexed.
   - `NEXT_PUBLIC_GOOGLE_VERIFICATION`, `NEXT_PUBLIC_BING_VERIFICATION` and
@@ -175,3 +174,22 @@ shingles, numbers ignored) on every pair and category page.
   /temperature/kelvin-to-celsius, /temperature/kelvin-to-fahrenheit (86-88
   words); categories /angular-acceleration, /electric-field-strength,
   /thermal-conductivity, /electric-conductance, /prefixes (102-104 words).
+
+## Indexing round 2 (2026-11-20)
+
+Same treatment for the next weakest pages (unique words before -> after):
+nf-to-pf 86 -> 199, in-lbs-to-nm 87 -> 166, tesla-to-gauss 87 -> 164,
+newtons-to-lbf 88 -> 155, minutes-to-hours 88 -> 154, weeks-to-days 88 -> 147,
+kelvin-to-celsius 88 -> 178, kelvin-to-fahrenheit 88 -> 141; categories
+angular-acceleration 102 -> 173, electric-field-strength 102 -> 184,
+thermal-conductivity 103 -> 187, electric-conductance 103 -> 174,
+prefixes 104 -> 191.
+
+Also: killa added as an alias of the acre in the land converter ("Killa: used as
+1 acre in Punjab", shown in the units table) with a "How many marla is 1 killa?"
+FAQ on /zameen/acre-to-marla.
+
+Weakest now, for a next round: /electric-resistance/kohm-to-ohm, /flow/m3-h-to-l-s,
+/typography/pt-to-px (88 words), /energy/kcal-to-kj, /energy/kwh-to-btu,
+/current/a-to-ma (89); categories /radiation-exposure (105), /moment-of-inertia,
+/radiation-absorbed-dose (106), /flow-molar (107).

@@ -35,6 +35,7 @@ export default function UnitsTable({ category }) {
             <tr key={u.id} className="border-b border-line last:border-b-0">
               <th scope="row" className="px-5 py-3 font-medium">
                 {u.name}
+                {u.note && <span className="block text-xs font-normal text-muted">{u.note}</span>}
                 {u.country !== "global" && (
                   <span className="ml-2 text-xs font-normal uppercase text-muted">{u.country}</span>
                 )}

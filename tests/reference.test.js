@@ -91,9 +91,9 @@ const REF = {
   power: { // base: W
     w: 1, kw: 1e3, mw: 1e6, gw: 1e9, hp: 550 * LBF * FT, "hp-electric": 746, "hp-metric": 75 * 9.80665, "btu-h": BTU / 3600,
     "ft-lbf-s": LBF * FT,
-    // Thermochemical kcal (4,184 J) per hour, as the site uses. The heat categories use the
-    // International Table kcal/h (1.163 W); the difference is listed in REVIEW.md.
-    "kcal-h": (1e3 * CAL_TH) / 3600, "ton-refrigeration": (12000 * BTU) / 3600,
+    // International Table kcal per hour: 4,186.8 J / 3,600 s = 1.163 W (NIST SP 811),
+    // the same calorie as the heat categories.
+    "kcal-h": (1e3 * CAL_IT) / 3600, "ton-refrigeration": (12000 * BTU) / 3600,
   },
   force: { n: 1, kn: 1e3, kip: 1000 * LBF, dyne: 1e-5, lbf: LBF, kgf: 9.80665, ozf: LBF / 16, poundal: LB * FT },
   time: {

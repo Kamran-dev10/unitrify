@@ -450,3 +450,11 @@ test("thin pages now have usage, steps and about sections, and 5 related pairs",
   await expect(page.getByText(/Its SI unit is the henry/)).toBeVisible();
   await expectNoHorizontalScroll(page);
 });
+
+test("privacy policy: no [REVIEW] line, mentions analytics, contact form, rates and AdSense", async ({ page }) => {
+  await open(page, "/privacy-policy");
+  const main = page.getByRole("main");
+  await expect(main).not.toContainText("[REVIEW]");
+  for (const text of ["Vercel Web Analytics", "contact form", "ExchangeRate-API", "Google AdSense"]) await expect(main).toContainText(text);
+  await expectNoHorizontalScroll(page);
+});
