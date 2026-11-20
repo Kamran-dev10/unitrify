@@ -432,3 +432,21 @@ test("/zameen hub lists the new land pages, and each links to its reverse", asyn
   await expect(page.getByRole("table").first().getByRole("columnheader", { name: "marla (225 sq ft marla)" })).toBeVisible();
   await expectNoHorizontalScroll(page);
 });
+
+test("thin pages now have usage, steps and about sections, and 5 related pairs", async ({ page }) => {
+  await open(page, "/time/days-to-hours");
+  await expect(page.getByRole("heading", { name: "Where it is used" })).toBeVisible();
+  const related = page.locator("section", { has: page.getByRole("heading", { name: "Related converters" }) });
+  await expect(related.getByRole("link")).toHaveCount(5);
+  await expectNoHorizontalScroll(page);
+
+  await open(page, "/number-converter/hex-to-decimal");
+  await expect(page.getByRole("heading", { name: "Step by step" })).toBeVisible();
+  await expect(page.getByText("1A3 = 1 × 256 + 10 × 16 + 3 = 419")).toBeVisible();
+  await expectNoHorizontalScroll(page);
+
+  await open(page, "/inductance");
+  await expect(page.getByRole("heading", { name: "About inductance" })).toBeVisible();
+  await expect(page.getByText(/Its SI unit is the henry/)).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});

@@ -153,3 +153,25 @@ are deprecated, or belong to a different quantity:
   - `NEXT_PUBLIC_SITE_URL` is required. Without it every page is noindexed.
   - `NEXT_PUBLIC_GOOGLE_VERIFICATION`, `NEXT_PUBLIC_BING_VERIFICATION` and
     `INDEXNOW_KEY` are optional.
+
+## Indexing fix (2026-11-20)
+
+Audit of unique visible text (prose in `<main>`, without tables, breadcrumbs,
+the source line and blocks repeated on 3+ pages) and similarity (4-word
+shingles, numbers ignored) on every pair and category page.
+
+- Similarity between pages was already low (24% at most), so the problem was
+  thin text, not duplicate text: pair median 99 words, weakest 65.
+- Improved 30 pair pages (the 12 reported by Search Console plus every pair
+  page at 85 words or fewer) and 13 category pages (the 4 reported plus the
+  10 weakest). Content lives in `lib/page-depth.js`. Average on these pages:
+  95 -> 187 unique words. Site minimum: pairs 65 -> 86, categories 86 -> 102.
+- Every pair page now links to 5 related pairs (own list, then same category,
+  then same group). Groups with fewer pages (magnetism 3, light 4,
+  radiology 5) link to every pair in the group instead.
+- Weakest pages now, for a next round: /capacitance/nf-to-pf,
+  /torque/in-lbs-to-nm, /magnetic-flux-density/tesla-to-gauss,
+  /force/newtons-to-lbf, /time/minutes-to-hours, /time/weeks-to-days,
+  /temperature/kelvin-to-celsius, /temperature/kelvin-to-fahrenheit (86-88
+  words); categories /angular-acceleration, /electric-field-strength,
+  /thermal-conductivity, /electric-conductance, /prefixes (102-104 words).

@@ -122,6 +122,15 @@ export default async function CategoryPage({ params }) {
         )}
       </p>
 
+      {c.about && (
+        <section className="mt-12 space-y-4 text-lg leading-relaxed">
+          <h2 className="text-xl font-semibold tracking-tight">About {c.name.toLowerCase()}</h2>
+          {c.about.map((para) => (
+            <p key={para}>{para}</p>
+          ))}
+        </section>
+      )}
+
       <section className="mt-12">
         <h2 className="text-xl font-semibold tracking-tight">{h.units}</h2>
         <UnitsTable category={c} />

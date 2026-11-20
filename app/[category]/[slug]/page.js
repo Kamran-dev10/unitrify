@@ -11,7 +11,7 @@ import PageCards from "@/components/PageCards";
 import SourceLine from "@/components/SourceLine";
 import ExtraSection from "@/components/ExtraSection";
 import { lastModifiedOf } from "@/lib/site-urls";
-import { PAGES, POPULAR_SIZE_PAGES, getPage, getPageBySlug, pageUrl } from "@/lib/pages";
+import { PAGES, POPULAR_SIZE_PAGES, getPage, getPageBySlug, pageUrl, relatedSlugsFor } from "@/lib/pages";
 import { getCategory } from "@/lib/categories";
 import { buildMetadata } from "@/lib/seo";
 import { groupCrumbFor } from "@/lib/groups";
@@ -66,6 +66,12 @@ function IntroAndFormula({ page }) {
           </>
         )}
       </p>
+      {page.usage && (
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold tracking-tight">Where it is used</h2>
+          <p className="mt-3 text-lg leading-relaxed">{page.usage}</p>
+        </div>
+      )}
       {page.note && <p className="mt-6 text-sm leading-relaxed text-muted">{page.note}</p>}
       {page.formula && (
         <div className="mt-6">
@@ -88,7 +94,8 @@ export default async function ConverterPage({ params }) {
   const examples = page.examples ?? [];
   const faqs = page.faqs ?? [];
   // Related entries are page slugs, or "/<category>" for the category page.
-  const related = (page.related ?? [])
+  // 5 related pairs (own list first, then same category and group) + any category links.
+  const related = relatedSlugsFor(page)
     .map((r) => {
       if (!r.startsWith("/")) return getPageBySlug(r);
       const c = getCategory(r.slice(1));

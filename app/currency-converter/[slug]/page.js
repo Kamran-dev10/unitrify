@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { groupCrumbFor } from "@/lib/groups";
 import { notFound } from "next/navigation";
-import { CURRENCY_PAGES, getTool } from "@/lib/tools";
+import { CURRENCY_PAGES, getTool, relatedToolSlugs } from "@/lib/tools";
 import { buildMetadata } from "@/lib/seo";
 import { getRates } from "@/lib/currency-rates";
 import { convertCurrency, currencyList, formatMoney, TABLE_AMOUNTS } from "@/lib/currency";
@@ -54,7 +54,7 @@ export default async function CurrencyPairPage({ params }) {
   const data = await getRates();
   const rates = data?.rates ?? null;
   const one = rates ? formatMoney(convertCurrency(1, p.from, p.to, rates)) : null;
-  const related = p.related.map(getPage).filter(Boolean).map((r) => ({ ...r, href: url(r) }));
+  const related = relatedToolSlugs(p, CURRENCY_PAGES).map(getPage).filter(Boolean).map((r) => ({ ...r, href: url(r) }));
 
   return (
     <ToolShell

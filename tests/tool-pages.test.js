@@ -115,12 +115,15 @@ describe("tool pages follow the page rules", () => {
     }
   });
 
-  it("every tool has an intro and 3 FAQs; number pages have 3 FAQs", () => {
+  it("every tool has an intro and 3 FAQs; number pages have 3-4 FAQs", () => {
     for (const t of TOOLS) {
       expect(t.intro).toBeTruthy();
       expect(t.faqs.length, t.id).toBe(3);
     }
-    for (const p of NUMBER_PAGES) expect(p.faqs.length, p.slug).toBe(3);
+    for (const p of NUMBER_PAGES) {
+      expect(p.faqs.length, p.slug).toBeGreaterThanOrEqual(3);
+      expect(p.faqs.length, p.slug).toBeLessThanOrEqual(4);
+    }
   });
 
   it("currency pages: 2 amounts for rate FAQs, 1 fixed FAQ, no rates written by hand", () => {

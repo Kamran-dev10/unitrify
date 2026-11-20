@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { groupCrumbFor } from "@/lib/groups";
 import { notFound } from "next/navigation";
-import { NUMBER_PAGES, getTool } from "@/lib/tools";
+import { NUMBER_PAGES, getTool, relatedToolSlugs } from "@/lib/tools";
 import { buildMetadata } from "@/lib/seo";
 import { baseName } from "@/lib/number-base";
 import ToolShell from "@/components/ToolShell";
@@ -45,7 +45,7 @@ export default async function NumberPairPage({ params }) {
         ? ["Number", "Roman numeral"]
         : ["Roman numeral", "Number"]
       : [baseName(p.fromBase), baseName(p.toBase)].map((s) => s.replace(/^./, (c) => c.toUpperCase()));
-  const related = p.related.map(getPage).filter(Boolean).map((r) => ({ ...r, href: url(r) }));
+  const related = relatedToolSlugs(p, NUMBER_PAGES).map(getPage).filter(Boolean).map((r) => ({ ...r, href: url(r) }));
 
   return (
     <ToolShell
@@ -69,9 +69,39 @@ export default async function NumberPairPage({ params }) {
         </Link>
         .
       </p>
+        {p.usage && (
+          <>
+            <h2 className="mt-6 text-xl font-semibold tracking-tight">Where it is used</h2>
+            <p className="mt-3 text-lg leading-relaxed">{p.usage}</p>
+          </>
+        )}
         <h2 className="mt-6 text-xl font-semibold tracking-tight">How it works</h2>
         <p className="mt-3 rounded-control border border-line bg-surface px-5 py-4 font-medium">{p.formula}</p>
       </section>
+
+      {p.steps && (
+        <section className="mt-12">
+          <h2 className="text-xl font-semibold tracking-tight">Step by step</h2>
+          <ol className="mt-4 list-decimal space-y-2 pl-6 text-lg leading-relaxed">
+            {p.steps.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {p.worked && (
+        <section className="mt-12">
+          <h2 className="text-xl font-semibold tracking-tight">Worked examples</h2>
+          <ul className="mt-4 space-y-3">
+            {p.worked.map((w) => (
+              <li key={w} className="rounded-control border border-line bg-surface px-5 py-4 font-mono">
+                {w}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="mt-12">
         <h2 className="text-xl font-semibold tracking-tight">
