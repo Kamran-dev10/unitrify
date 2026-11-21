@@ -69,10 +69,11 @@ export default function PrivacyPolicyPage() {
           it, ask for your consent.
         </p>
         <p>
-          You will be able to turn off personalized ads in{" "}
-          <a href="https://adssettings.google.com" className="text-accent underline">
-            Google Ads Settings
+          You will be able to turn off personalized ads in Google&apos;s My Ad Center (see{" "}
+          <a href="https://support.google.com/My-Ad-Center-Help/answer/12155451" className="text-accent underline">
+            Customize your ads experience
           </a>
+          )
           , and read how Google uses data at{" "}
           <a href="https://policies.google.com/technologies/partner-sites" className="text-accent underline">
             policies.google.com/technologies/partner-sites

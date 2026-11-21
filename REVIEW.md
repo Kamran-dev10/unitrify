@@ -193,3 +193,9 @@ Weakest now, for a next round: /electric-resistance/kohm-to-ohm, /flow/m3-h-to-l
 /typography/pt-to-px (88 words), /energy/kcal-to-kj, /energy/kwh-to-btu,
 /current/a-to-ma (89); categories /radiation-exposure (105), /moment-of-inertia,
 /radiation-absorbed-dose (106), /flow-molar (107).
+
+## Ahrefs site audit (2026-11-21)
+
+- External 3XX: the privacy policy linked `https://adssettings.google.com`, which 302-redirects (the final page depends on Google sign-in). It now links Google's help page "Customize your ads experience" (support.google.com/My-Ad-Center-Help/answer/12155451, 200).
+- Internal redirect: not found on the live site. A crawl of all 273 pages from the homepage, every link, image, meta and JSON-LD URL, the header menu and the search index all return 200. The only redirects the site has are `/moment-of-force` → `/torque` and `www` → apex, and nothing links to either. Open: need the source/target URL from the Ahrefs report (Site Audit › Links › "Internal link to redirect").
+- Title rewrite: search results showed `/data-transfer/mb-s-to-mbps` with its H1 instead of its title. Title now repeats the H1: "MB/s to Mbps – Megabytes to Megabits per Second"; the reverse page `/data-transfer/mbps-to-mb-s` got the same fix.

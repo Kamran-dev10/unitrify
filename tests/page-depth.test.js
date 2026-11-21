@@ -51,8 +51,8 @@ describe("indexing fix: deeper content on thin pages", () => {
   });
 
   it("sitemap dates change only for pages whose content changed", () => {
-    // Other pages whose content changed that day: kcal/h factor, killa FAQ and note, privacy policy.
-    const OTHER = ["/power", "/zameen", "/zameen/acre-to-marla", "/privacy-policy"];
+    // Other pages whose content changed that day: kcal/h factor, killa FAQ and note.
+    const OTHER = ["/power", "/zameen", "/zameen/acre-to-marla"];
     const changed = new Set([...DEPTH_PATHS.pairs, ...DEPTH_PATHS.numbers, ...DEPTH_PATHS.categories.map((id) => `/${id}`), ...OTHER]);
     for (const e of siteEntries()) {
       if (changed.has(e.path)) expect(e.lastModified, e.path).toBe(DAY);
